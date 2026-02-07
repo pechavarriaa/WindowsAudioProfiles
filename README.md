@@ -9,6 +9,12 @@ Run this in PowerShell:
 irm https://raw.githubusercontent.com/pechavarriaa/WindowsAudioProfiles/main/install.ps1 | iex
 ```
 
+The installer will:
+1. Download the script
+2. Show your available audio devices
+3. Let you pick your devices by number
+4. Save your configuration automatically
+
 **With options:**
 ```powershell
 # Add to startup + desktop shortcut
@@ -49,9 +55,9 @@ irm https://raw.githubusercontent.com/pechavarriaa/WindowsAudioProfiles/main/ins
 3. **Edit device names** in the script to match your audio devices:
    ```powershell
    $speakerDevice = "Speakers (Your Speaker Name)"
-   $hyperxDeviceOutput = "Headphones (Your Headphone Name)"
-   $hyperxDeviceInput = "Microphone (Your Mic Name)"
-   $ankerDevice = "Microphone (Your Alt Mic Name)"
+   $headsetOutput = "Headphones (Your Headphone Name)"
+   $headsetInput = "Microphone (Your Headset Mic Name)"
+   $secondMicDevice = "Microphone (Your Webcam/Alt Mic Name)"
    ```
 
    To find your exact device names, run this in PowerShell after loading the script:
@@ -93,15 +99,15 @@ Get-AudioDevices
 
 The script switches between two audio configurations:
 
-**Configuration 1 (HyperX mode):**
-- Output: HyperX Headset
-- Input: HyperX Headset Microphone
+**Configuration 1 (Headset mode):**
+- Output: Your headset speakers
+- Input: Your headset microphone
 
 **Configuration 2 (Desktop mode):**
-- Output: Lenovo USB Speakers
-- Input: Anker Webcam Microphone
+- Output: Your desktop speakers/monitor
+- Input: Your webcam/secondary microphone
 
-Modify the device name variables at the top of the script to match your setup.
+The installer will guide you through selecting your devices, or you can edit the variables at the top of the script manually.
 
 ## Troubleshooting
 

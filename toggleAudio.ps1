@@ -216,10 +216,12 @@ namespace CoreAudioApi {
 
 Add-Type -TypeDefinition $csharpCode
 
+# === CONFIGURE YOUR DEVICES HERE ===
+# Run Get-AudioDevices to see available device names
 $speakerDevice = "Speakers (Lenovo USB Audio)"
-$ankerDevice = "Microphone (Anker PowerConf C200)"
-$hyperxDeviceOutput = "Headset Earphone (HyperX Virtual Surround Sound)"
-$hyperxDeviceInput = "Headset Microphone (HyperX Virtual Surround Sound)"
+$secondMicDevice = "Microphone (Anker PowerConf C200)"
+$headsetOutput = "Headset Earphone (HyperX Virtual Surround Sound)"
+$headsetInput = "Headset Microphone (HyperX Virtual Surround Sound)"
 
 function Toggle-AudioSetup {
     try {
@@ -231,29 +233,29 @@ function Toggle-AudioSetup {
     }
 
 
-    if ($currentPlayback -eq $hyperxDeviceOutput) {
-        # Switch to Anker + Lenovo
+    if ($currentPlayback -eq $headsetOutput) {
+        # Switch to Speaker + Secondary Mic
         try {
-            [CoreAudioApi.CoreAudioController]::SetDefaultDevice($ankerDevice, [CoreAudioApi.ERole]::eConsole)
-            [CoreAudioApi.CoreAudioController]::SetDefaultDevice($ankerDevice, [CoreAudioApi.ERole]::eMultimedia)
-            [CoreAudioApi.CoreAudioController]::SetDefaultDevice($ankerDevice, [CoreAudioApi.ERole]::eCommunications)
+            [CoreAudioApi.CoreAudioController]::SetDefaultDevice($secondMicDevice, [CoreAudioApi.ERole]::eConsole)
+            [CoreAudioApi.CoreAudioController]::SetDefaultDevice($secondMicDevice, [CoreAudioApi.ERole]::eMultimedia)
+            [CoreAudioApi.CoreAudioController]::SetDefaultDevice($secondMicDevice, [CoreAudioApi.ERole]::eCommunications)
             [CoreAudioApi.CoreAudioController]::SetDefaultDevice($speakerDevice, [CoreAudioApi.ERole]::eConsole)
             [CoreAudioApi.CoreAudioController]::SetDefaultDevice($speakerDevice, [CoreAudioApi.ERole]::eMultimedia)
-            return "Switched to Lenovo Speakers + Anker Mic"
+            return "Switched to Speakers + Secondary Mic"
         }
         catch {
             return "Error: $($_.Exception.Message)"
         }
     }
     else {
-        # Switch to HyperX
+        # Switch to Headset
         try {
-            [CoreAudioApi.CoreAudioController]::SetDefaultDevice($hyperxDeviceInput, [CoreAudioApi.ERole]::eConsole)
-            [CoreAudioApi.CoreAudioController]::SetDefaultDevice($hyperxDeviceInput, [CoreAudioApi.ERole]::eMultimedia)
-            [CoreAudioApi.CoreAudioController]::SetDefaultDevice($hyperxDeviceInput, [CoreAudioApi.ERole]::eCommunications)
-            [CoreAudioApi.CoreAudioController]::SetDefaultDevice($hyperxDeviceOutput, [CoreAudioApi.ERole]::eConsole)
-            [CoreAudioApi.CoreAudioController]::SetDefaultDevice($hyperxDeviceOutput, [CoreAudioApi.ERole]::eMultimedia)
-            return "Switched to HyperX Headset"
+            [CoreAudioApi.CoreAudioController]::SetDefaultDevice($headsetInput, [CoreAudioApi.ERole]::eConsole)
+            [CoreAudioApi.CoreAudioController]::SetDefaultDevice($headsetInput, [CoreAudioApi.ERole]::eMultimedia)
+            [CoreAudioApi.CoreAudioController]::SetDefaultDevice($headsetInput, [CoreAudioApi.ERole]::eCommunications)
+            [CoreAudioApi.CoreAudioController]::SetDefaultDevice($headsetOutput, [CoreAudioApi.ERole]::eConsole)
+            [CoreAudioApi.CoreAudioController]::SetDefaultDevice($headsetOutput, [CoreAudioApi.ERole]::eMultimedia)
+            return "Switched to Headset"
         }
         catch {
             return "Error: $($_.Exception.Message)"

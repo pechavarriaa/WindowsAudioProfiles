@@ -101,14 +101,74 @@ Write-Success "`n=== Installation Complete ==="
 Write-Host ""
 Write-Host "Installed to: $scriptPath" -ForegroundColor White
 Write-Host ""
-Write-Host "Next steps:" -ForegroundColor Yellow
-Write-Host "  1. Edit the script to set your audio device names:" -ForegroundColor White
-Write-Host "     notepad `"$scriptPath`"" -ForegroundColor Gray
-Write-Host ""
-Write-Host "  2. Find your device names by running:" -ForegroundColor White
-Write-Host "     . `"$scriptPath`"; Get-AudioDevices" -ForegroundColor Gray
-Write-Host ""
-Write-Host "  3. Launch from Start Menu: 'Audio Toggle'" -ForegroundColor White
+
+# Device configuration
+if (-not $Silent) {
+    Write-Host "=== Configure Your Audio Devices ===" -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "Loading audio devices..." -ForegroundColor Cyan
+    
+    # Load the script to get device list
+    $scriptContent = Get-Content $scriptPath -Raw
+    # Execute just the C# part and Add-Type to load the API
+    $csharpMatch = [regex]::Match($scriptContent, '\$csharpCode = @"(.+?)"@', [System.Text.RegularExpressions.RegexOptions]::Singleline)
+    if ($csharpMatch.Success) {
+        $csharpCode = $csharpMatch.Groups[1].Value
+        Add-Type -TypeDefinition $csharpCode -ErrorAction SilentlyContinue
+    }
+    
+    Add-Type -AssemblyName System.Windows.Forms
+    
+    Write-Host ""
+    Write-Host "=== OUTPUT DEVICES (Speakers/Headphones) ===" -ForegroundColor Cyan
+    $outputDevices = [CoreAudioApi.CoreAudioController]::GetAudioDevices([CoreAudioApi.EDataFlow]::eRender)
+    for ($i = 0; $i -lt $outputDevices.Count; $i++) {
+        Write-Host "  [$i] $($outputDevices[$i])"
+    }
+    
+    Write-Host ""
+    Write-Host "=== INPUT DEVICES (Microphones) ===" -ForegroundColor Cyan
+    $inputDevices = [CoreAudioApi.CoreAudioController]::GetAudioDevices([CoreAudioApi.EDataFlow]::eCapture)
+    for ($i = 0; $i -lt $inputDevices.Count; $i++) {
+        Write-Host "  [$i] $($inputDevices[$i])"
+    }
+    
+    Write-Host ""
+    Write-Host "Enter the NUMBER for each device:" -ForegroundColor Yellow
+    Write-Host ""
+    
+    # Get user selections
+    $speakerIdx = Read-Host "Speaker/Monitor output device #"
+    $headsetOutIdx = Read-Host "Headset output device #"
+    $headsetInIdx = Read-Host "Headset microphone device #"
+    $secondMicIdx = Read-Host "Secondary microphone device # (webcam, etc.)"
+    
+    # Validate and get device names
+    $speakerDevice = $outputDevices[[int]$speakerIdx]
+    $headsetOutput = $outputDevices[[int]$headsetOutIdx]
+    $headsetInput = $inputDevices[[int]$headsetInIdx]
+    $secondMicDevice = $inputDevices[[int]$secondMicIdx]
+    
+    Write-Host ""
+    Write-Host "Your configuration:" -ForegroundColor Green
+    Write-Host "  Speaker: $speakerDevice"
+    Write-Host "  Headset Output: $headsetOutput"
+    Write-Host "  Headset Mic: $headsetInput"
+    Write-Host "  Secondary Mic: $secondMicDevice"
+    Write-Host ""
+    
+    # Update the script with user's devices
+    $scriptContent = $scriptContent -replace '\$speakerDevice = ".*?"', "`$speakerDevice = `"$speakerDevice`""
+    $scriptContent = $scriptContent -replace '\$headsetOutput = ".*?"', "`$headsetOutput = `"$headsetOutput`""
+    $scriptContent = $scriptContent -replace '\$headsetInput = ".*?"', "`$headsetInput = `"$headsetInput`""
+    $scriptContent = $scriptContent -replace '\$secondMicDevice = ".*?"', "`$secondMicDevice = `"$secondMicDevice`""
+    
+    Set-Content -Path $scriptPath -Value $scriptContent -Encoding UTF8
+    Write-Success "Configuration saved!"
+    Write-Host ""
+}
+
+Write-Host "Launch from Start Menu: 'Audio Toggle'" -ForegroundColor White
 Write-Host ""
 
 if (-not $Silent) {
