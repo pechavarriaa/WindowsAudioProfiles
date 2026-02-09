@@ -178,8 +178,7 @@ class AudioToggle:
     def toggle_audio(self, _):
         """Toggle between audio configurations"""
         if not all([self.speaker_device, self.headset_output, self.speaker_input, self.headset_input]):
-            self.show_notification("Configuration Required", "Please configure your audio devices first.")
-            self.configure_devices(None)
+            self.show_notification("Configuration Required", "Please use 'Configure Devices...' from the menu to set up your audio devices.")
             return
         
         current_output = self.get_current_device('sink')
@@ -313,32 +312,76 @@ def configure_interactive():
         print(f"Error getting devices: {e}")
         return
     
+    # Letters for input devices (matching Windows installer pattern)
+    letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P']
+    
     # Display devices
-    print("=== OUTPUT DEVICES (Speakers/Headphones) ===")
+    print("=== OUTPUT DEVICES (Speakers/Headphones) - Use NUMBERS ===")
     for i, device in enumerate(output_devices):
         print(f"  [{i}] {device['name']}")
     
-    print("\n=== INPUT DEVICES (Microphones) ===")
+    print("\n=== INPUT DEVICES (Microphones) - Use LETTERS ===")
     for i, device in enumerate(input_devices):
-        print(f"  [{i}] {device['name']}")
+        if i < len(letters):
+            print(f"  [{letters[i]}] {device['name']}")
     
     print("\n")
+    print("Enter NUMBER for outputs, LETTER for inputs (or 'q' to quit):")
+    print()
     
     # Get user selections
     try:
-        speaker_idx = int(input("1. Select speaker/monitor output (number): "))
+        # Get speaker output
+        speaker_input_str = input("1. Speaker/Monitor (OUTPUT - enter number): ")
+        if speaker_input_str.lower() == 'q':
+            print("Configuration cancelled.")
+            return
+        speaker_idx = int(speaker_input_str)
+        if speaker_idx < 0 or speaker_idx >= len(output_devices):
+            print("Error: Number out of range.")
+            return
         speaker_device = output_devices[speaker_idx]['id']
         speaker_name = output_devices[speaker_idx]['name']
         
-        speaker_input_idx = int(input("2. Select speaker input/microphone (number): "))
+        # Get speaker input
+        speaker_input_letter = input("2. Secondary Microphone - webcam, etc. (INPUT - enter letter): ").upper()
+        if speaker_input_letter == 'Q':
+            print("Configuration cancelled.")
+            return
+        if speaker_input_letter not in letters:
+            print("Error: Invalid letter.")
+            return
+        speaker_input_idx = letters.index(speaker_input_letter)
+        if speaker_input_idx >= len(input_devices):
+            print("Error: Letter out of range.")
+            return
         speaker_input = input_devices[speaker_input_idx]['id']
         speaker_input_name = input_devices[speaker_input_idx]['name']
         
-        headset_output_idx = int(input("3. Select headset output (number): "))
+        # Get headset output
+        headset_output_str = input("3. Headset Output (OUTPUT - enter number): ")
+        if headset_output_str.lower() == 'q':
+            print("Configuration cancelled.")
+            return
+        headset_output_idx = int(headset_output_str)
+        if headset_output_idx < 0 or headset_output_idx >= len(output_devices):
+            print("Error: Number out of range.")
+            return
         headset_output = output_devices[headset_output_idx]['id']
         headset_output_name = output_devices[headset_output_idx]['name']
         
-        headset_input_idx = int(input("4. Select headset microphone (number): "))
+        # Get headset input
+        headset_input_letter = input("4. Headset Microphone (INPUT - enter letter): ").upper()
+        if headset_input_letter == 'Q':
+            print("Configuration cancelled.")
+            return
+        if headset_input_letter not in letters:
+            print("Error: Invalid letter.")
+            return
+        headset_input_idx = letters.index(headset_input_letter)
+        if headset_input_idx >= len(input_devices):
+            print("Error: Letter out of range.")
+            return
         headset_input = input_devices[headset_input_idx]['id']
         headset_input_name = input_devices[headset_input_idx]['name']
         
