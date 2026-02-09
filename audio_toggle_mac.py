@@ -101,6 +101,9 @@ class AudioToggle(rumps.App):
     @rumps.clicked("Toggle Audio")
     def toggle_audio(self, _):
         """Toggle between audio configurations"""
+        # Reload configuration to get latest settings
+        self.load_config()
+        
         if not all([self.speaker_device, self.headset_output, self.speaker_input, self.headset_input]):
             self.show_notification("Configuration Required", "Please use 'Configure Devices...' from the menu to set up your audio devices.")
             return
