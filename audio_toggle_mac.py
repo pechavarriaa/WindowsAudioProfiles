@@ -108,18 +108,50 @@ class AudioToggle(rumps.App):
             self.show_notification("Configuration Required", "Please use 'Configure Devices...' from the menu to set up your audio devices.")
             return
         
+        # Get current device
         current_output = self.get_current_device('output')
         
+        # Debug logging
+        print(f"[Toggle] Current output: '{current_output}'")
+        print(f"[Toggle] Speaker device: '{self.speaker_device}'")
+        print(f"[Toggle] Headset output: '{self.headset_output}'")
+        
+        # Determine target devices based on current state
         if current_output == self.headset_output:
-            # Switch to speakers
-            if self.set_audio_device(self.speaker_device, 'output'):
-                self.set_audio_device(self.speaker_input, 'input')
-                self.show_notification("Audio Switched", f"Output: {self.speaker_device}\nInput: {self.speaker_input}")
+            # Currently on headset, switch to speakers
+            target_output = self.speaker_device
+            target_input = self.speaker_input
+            profile_name = "Speakers"
+        elif current_output == self.speaker_device:
+            # Currently on speakers, switch to headset
+            target_output = self.headset_output
+            target_input = self.headset_input
+            profile_name = "Headset"
         else:
-            # Switch to headset
-            if self.set_audio_device(self.headset_output, 'output'):
-                self.set_audio_device(self.headset_input, 'input')
-                self.show_notification("Audio Switched", f"Output: {self.headset_output}\nInput: {self.headset_input}")
+            # Current device doesn't match either configured device
+            # Default to switching to speakers
+            print(f"[Toggle] Warning: Current device doesn't match configured devices")
+            print(f"[Toggle] Defaulting to Speakers profile")
+            target_output = self.speaker_device
+            target_input = self.speaker_input
+            profile_name = "Speakers"
+        
+        print(f"[Toggle] Switching to {profile_name}: output='{target_output}', input='{target_input}'")
+        
+        # Attempt to switch output device
+        output_success = self.set_audio_device(target_output, 'output')
+        if not output_success:
+            self.show_notification("Toggle Failed", f"Failed to switch output to {target_output}")
+            return
+        
+        # Attempt to switch input device
+        input_success = self.set_audio_device(target_input, 'input')
+        if not input_success:
+            self.show_notification("Toggle Partial", f"Output switched but input failed")
+            return
+        
+        # Both switches succeeded
+        self.show_notification("Audio Switched", f"Switched to {profile_name}\nOutput: {target_output}\nInput: {target_input}")
     
     def show_notification(self, title, message):
         """Show macOS notification"""

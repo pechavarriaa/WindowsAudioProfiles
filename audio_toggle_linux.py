@@ -184,18 +184,50 @@ class AudioToggle:
             self.show_notification("Configuration Required", "Please use 'Configure Devices...' from the menu to set up your audio devices.")
             return
         
+        # Get current device
         current_output = self.get_current_device('sink')
         
+        # Debug logging
+        print(f"[Toggle] Current output: '{current_output}'")
+        print(f"[Toggle] Speaker device: '{self.speaker_device}'")
+        print(f"[Toggle] Headset output: '{self.headset_output}'")
+        
+        # Determine target devices based on current state
         if current_output == self.headset_output:
-            # Switch to speakers
-            if self.set_audio_device(self.speaker_device, 'sink'):
-                self.set_audio_device(self.speaker_input, 'source')
-                self.show_notification("Audio Switched", f"Speakers + Microphone active")
+            # Currently on headset, switch to speakers
+            target_output = self.speaker_device
+            target_input = self.speaker_input
+            profile_name = "Speakers"
+        elif current_output == self.speaker_device:
+            # Currently on speakers, switch to headset
+            target_output = self.headset_output
+            target_input = self.headset_input
+            profile_name = "Headset"
         else:
-            # Switch to headset
-            if self.set_audio_device(self.headset_output, 'sink'):
-                self.set_audio_device(self.headset_input, 'source')
-                self.show_notification("Audio Switched", f"Headset active")
+            # Current device doesn't match either configured device
+            # Default to switching to speakers
+            print(f"[Toggle] Warning: Current device doesn't match configured devices")
+            print(f"[Toggle] Defaulting to Speakers profile")
+            target_output = self.speaker_device
+            target_input = self.speaker_input
+            profile_name = "Speakers"
+        
+        print(f"[Toggle] Switching to {profile_name}: output='{target_output}', input='{target_input}'")
+        
+        # Attempt to switch output device
+        output_success = self.set_audio_device(target_output, 'sink')
+        if not output_success:
+            self.show_notification("Toggle Failed", f"Failed to switch output to {target_output}")
+            return
+        
+        # Attempt to switch input device
+        input_success = self.set_audio_device(target_input, 'source')
+        if not input_success:
+            self.show_notification("Toggle Partial", f"Output switched but input failed")
+            return
+        
+        # Both switches succeeded
+        self.show_notification("Audio Switched", f"Switched to {profile_name}\nOutput: {target_output}\nInput: {target_input}")
     
     def show_notification(self, title, message):
         """Show desktop notification"""
