@@ -6,7 +6,7 @@ A lightweight Python application that adds a **menu bar icon** to quickly toggle
 
 Run this in Terminal:
 ```bash
-curl -fsSL https://raw.githubusercontent.com/pechavarriaa/WindowsAudioProfiles/copilot/mac-version-installation/install_mac.sh | bash
+curl -fsSL https://raw.githubusercontent.com/pechavarriaa/WindowsAudioProfiles/main/install_mac.sh | bash
 ```
 
 The installer will:
@@ -61,7 +61,7 @@ If you prefer to install manually:
 4. **Download the script**:
    ```bash
    mkdir -p ~/.local/share/audio_toggle
-   curl -fsSL https://raw.githubusercontent.com/pechavarriaa/WindowsAudioProfiles/copilot/mac-version-installation/audio_toggle_mac.py -o ~/.local/share/audio_toggle/audio_toggle_mac.py
+   curl -fsSL https://raw.githubusercontent.com/pechavarriaa/WindowsAudioProfiles/main/audio_toggle_mac.py -o ~/.local/share/audio_toggle/audio_toggle_mac.py
    chmod +x ~/.local/share/audio_toggle/audio_toggle_mac.py
    ```
 
@@ -158,7 +158,7 @@ python3 ~/.local/share/audio_toggle/audio_toggle_mac.py --configure
 ## Uninstall
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/pechavarriaa/WindowsAudioProfiles/copilot/mac-version-installation/uninstall_mac.sh | bash
+curl -fsSL https://raw.githubusercontent.com/pechavarriaa/WindowsAudioProfiles/main/uninstall_mac.sh | bash
 ```
 
 Or if you have the uninstall script locally:

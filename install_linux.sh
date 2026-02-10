@@ -94,7 +94,7 @@ if [ -f "$SCRIPT_NAME" ]; then
     cp "$SCRIPT_NAME" "$INSTALL_DIR/$SCRIPT_NAME"
 else
     echo -e "${CYAN}Downloading Audio Toggle script...${NC}"
-    curl -fsSL "https://raw.githubusercontent.com/pechavarriaa/WindowsAudioProfiles/copilot/linux-version-installation/$SCRIPT_NAME" -o "$INSTALL_DIR/$SCRIPT_NAME"
+    curl -fsSL "https://raw.githubusercontent.com/pechavarriaa/WindowsAudioProfiles/main/$SCRIPT_NAME" -o "$INSTALL_DIR/$SCRIPT_NAME"
 fi
 
 # Make script executable

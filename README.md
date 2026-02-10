@@ -13,13 +13,13 @@ irm https://raw.githubusercontent.com/pechavarriaa/WindowsAudioProfiles/main/ins
 ### macOS
 Run this in Terminal:
 ```bash
-curl -fsSL https://raw.githubusercontent.com/pechavarriaa/WindowsAudioProfiles/copilot/mac-version-installation/install_mac.sh | bash
+curl -fsSL https://raw.githubusercontent.com/pechavarriaa/WindowsAudioProfiles/main/install_mac.sh | bash
 ```
 
 ### Linux (Ubuntu, Fedora, Arch, openSUSE)
 Run this in your terminal:
 ```bash
-curl -fsSL https://raw.githubusercontent.com/pechavarriaa/WindowsAudioProfiles/copilot/mac-version-installation/install_linux.sh | bash
+curl -fsSL https://raw.githubusercontent.com/pechavarriaa/WindowsAudioProfiles/main/install_linux.sh | bash
 ```
 
 ## Features
@@ -119,14 +119,14 @@ All platforms use an interactive configuration wizard that:
 ```bash
 bash uninstall_mac.sh
 # Or via curl:
-curl -fsSL https://raw.githubusercontent.com/pechavarriaa/WindowsAudioProfiles/copilot/mac-version-installation/uninstall_mac.sh | bash
+curl -fsSL https://raw.githubusercontent.com/pechavarriaa/WindowsAudioProfiles/main/uninstall_mac.sh | bash
 ```
 
 ### Linux
 ```bash
 bash uninstall_linux.sh
 # Or via curl:
-curl -fsSL https://raw.githubusercontent.com/pechavarriaa/WindowsAudioProfiles/copilot/mac-version-installation/uninstall_linux.sh | bash
+curl -fsSL https://raw.githubusercontent.com/pechavarriaa/WindowsAudioProfiles/main/uninstall_linux.sh | bash
 ```
 
 ## Platform Comparison

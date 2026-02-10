@@ -52,12 +52,12 @@ irm https://raw.githubusercontent.com/pechavarriaa/WindowsAudioProfiles/main/ins
 
 **macOS:**
 ```bash
-curl -fsSL https://raw.githubusercontent.com/pechavarriaa/WindowsAudioProfiles/copilot/mac-version-installation/install_mac.sh | bash
+curl -fsSL https://raw.githubusercontent.com/pechavarriaa/WindowsAudioProfiles/main/install_mac.sh | bash
 ```
 
 **Linux:**
 ```bash
-curl -fsSL https://raw.githubusercontent.com/pechavarriaa/WindowsAudioProfiles/copilot/mac-version-installation/install_linux.sh | bash
+curl -fsSL https://raw.githubusercontent.com/pechavarriaa/WindowsAudioProfiles/main/install_linux.sh | bash
 ```
 
 ## Common Features Across All Platforms
@@ -120,5 +120,5 @@ f7f65f6 - Restore Mac version: Keep both Mac and Linux implementations
 ---
 
 **Date:** 2026-02-10
-**Branch:** copilot/mac-version-installation
+**Branch:** main
 **Status:** Complete

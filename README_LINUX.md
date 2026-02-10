@@ -6,7 +6,7 @@ A lightweight Python application that adds a **system tray icon** to quickly tog
 
 Run this in your terminal:
 ```bash
-curl -fsSL https://raw.githubusercontent.com/pechavarriaa/WindowsAudioProfiles/copilot/linux-version-installation/install_linux.sh | bash
+curl -fsSL https://raw.githubusercontent.com/pechavarriaa/WindowsAudioProfiles/main/install_linux.sh | bash
 ```
 
 The installer will:
@@ -69,7 +69,7 @@ mkdir -p ~/.config/audio_toggle
 mkdir -p ~/.config/autostart
 
 # Download script
-curl -fsSL https://raw.githubusercontent.com/pechavarriaa/WindowsAudioProfiles/copilot/linux-version-installation/audio_toggle_linux.py -o ~/.local/share/audio_toggle/audio_toggle_linux.py
+curl -fsSL https://raw.githubusercontent.com/pechavarriaa/WindowsAudioProfiles/main/audio_toggle_linux.py -o ~/.local/share/audio_toggle/audio_toggle_linux.py
 chmod +x ~/.local/share/audio_toggle/audio_toggle_linux.py
 
 # Configure
@@ -89,7 +89,7 @@ mkdir -p ~/.local/share/audio_toggle
 mkdir -p ~/.config/audio_toggle
 mkdir -p ~/.config/autostart
 
-curl -fsSL https://raw.githubusercontent.com/pechavarriaa/WindowsAudioProfiles/copilot/linux-version-installation/audio_toggle_linux.py -o ~/.local/share/audio_toggle/audio_toggle_linux.py
+curl -fsSL https://raw.githubusercontent.com/pechavarriaa/WindowsAudioProfiles/main/audio_toggle_linux.py -o ~/.local/share/audio_toggle/audio_toggle_linux.py
 chmod +x ~/.local/share/audio_toggle/audio_toggle_linux.py
 
 python3 ~/.local/share/audio_toggle/audio_toggle_linux.py --configure
@@ -106,7 +106,7 @@ mkdir -p ~/.local/share/audio_toggle
 mkdir -p ~/.config/audio_toggle
 mkdir -p ~/.config/autostart
 
-curl -fsSL https://raw.githubusercontent.com/pechavarriaa/WindowsAudioProfiles/copilot/linux-version-installation/audio_toggle_linux.py -o ~/.local/share/audio_toggle/audio_toggle_linux.py
+curl -fsSL https://raw.githubusercontent.com/pechavarriaa/WindowsAudioProfiles/main/audio_toggle_linux.py -o ~/.local/share/audio_toggle/audio_toggle_linux.py
 chmod +x ~/.local/share/audio_toggle/audio_toggle_linux.py
 
 python3 ~/.local/share/audio_toggle/audio_toggle_linux.py --configure
@@ -219,7 +219,7 @@ sudo pacman -S libnotify
 ## Uninstall
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/pechavarriaa/WindowsAudioProfiles/copilot/linux-version-installation/uninstall_linux.sh | bash
+curl -fsSL https://raw.githubusercontent.com/pechavarriaa/WindowsAudioProfiles/main/uninstall_linux.sh | bash
 ```
 
 Or if you have the uninstall script locally:
