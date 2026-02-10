@@ -249,16 +249,16 @@ class AudioToggle:
             ['xfce4-terminal', '-e', 'bash -c'],
             ['xterm', '-e', 'bash', '-c'],
         ]
-        
-        cmd_str = f"python3 {script_path} --configure; read -p 'Press Enter to close...'"
-        
+
+        cmd_str = f"python3 {script_path} --configure"
+
         for terminal in terminals:
             try:
                 subprocess.Popen(terminal + [cmd_str])
                 return
             except FileNotFoundError:
                 continue
-        
+
         print("No terminal found. Please run manually:")
         print(f"python3 {script_path} --configure")
     
