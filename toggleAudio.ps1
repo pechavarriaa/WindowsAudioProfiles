@@ -234,28 +234,28 @@ function Toggle-AudioSetup {
 
 
     if ($currentPlayback -eq $headsetOutput) {
-        # Switch to Speaker + Secondary Mic
+        # Switch to Profile 1
         try {
             [CoreAudioApi.CoreAudioController]::SetDefaultDevice($secondMicDevice, [CoreAudioApi.ERole]::eConsole)
             [CoreAudioApi.CoreAudioController]::SetDefaultDevice($secondMicDevice, [CoreAudioApi.ERole]::eMultimedia)
             [CoreAudioApi.CoreAudioController]::SetDefaultDevice($secondMicDevice, [CoreAudioApi.ERole]::eCommunications)
             [CoreAudioApi.CoreAudioController]::SetDefaultDevice($speakerDevice, [CoreAudioApi.ERole]::eConsole)
             [CoreAudioApi.CoreAudioController]::SetDefaultDevice($speakerDevice, [CoreAudioApi.ERole]::eMultimedia)
-            return "Switched to Speakers + Secondary Mic"
+            return "Switched to Profile 1"
         }
         catch {
             return "Error: $($_.Exception.Message)"
         }
     }
     else {
-        # Switch to Headset
+        # Switch to Profile 2
         try {
             [CoreAudioApi.CoreAudioController]::SetDefaultDevice($headsetInput, [CoreAudioApi.ERole]::eConsole)
             [CoreAudioApi.CoreAudioController]::SetDefaultDevice($headsetInput, [CoreAudioApi.ERole]::eMultimedia)
             [CoreAudioApi.CoreAudioController]::SetDefaultDevice($headsetInput, [CoreAudioApi.ERole]::eCommunications)
             [CoreAudioApi.CoreAudioController]::SetDefaultDevice($headsetOutput, [CoreAudioApi.ERole]::eConsole)
             [CoreAudioApi.CoreAudioController]::SetDefaultDevice($headsetOutput, [CoreAudioApi.ERole]::eMultimedia)
-            return "Switched to Headset"
+            return "Switched to Profile 2"
         }
         catch {
             return "Error: $($_.Exception.Message)"

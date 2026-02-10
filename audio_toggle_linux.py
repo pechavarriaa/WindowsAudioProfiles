@@ -193,28 +193,28 @@ class AudioToggle:
         
         # Debug logging
         print(f"[Toggle] Current output: '{current_output}'")
-        print(f"[Toggle] Speaker device: '{self.speaker_device}'")
-        print(f"[Toggle] Headset output: '{self.headset_output}'")
+        print(f"[Toggle] Profile 1 Output: '{self.speaker_device}'")
+        print(f"[Toggle] Profile 2 Output: '{self.headset_output}'")
         
         # Determine target devices based on current state
         if current_output == self.headset_output:
-            # Currently on headset, switch to speakers
+            # Currently on headset (Profile 2), switch to speakers (Profile 1)
             target_output = self.speaker_device
             target_input = self.speaker_input
-            profile_name = "Speakers"
+            profile_name = "Profile 1"
         elif current_output == self.speaker_device:
-            # Currently on speakers, switch to headset
+            # Currently on speakers (Profile 1), switch to headset (Profile 2)
             target_output = self.headset_output
             target_input = self.headset_input
-            profile_name = "Headset"
+            profile_name = "Profile 2"
         else:
             # Current device doesn't match either configured device
             # Default to switching to speakers
             print(f"[Toggle] Warning: Current device doesn't match configured devices")
-            print(f"[Toggle] Defaulting to Speakers profile")
+            print(f"[Toggle] Defaulting to Profile 1")
             target_output = self.speaker_device
             target_input = self.speaker_input
-            profile_name = "Speakers"
+            profile_name = "Profile 1"
         
         print(f"[Toggle] Switching to {profile_name}: output='{target_output}', input='{target_input}'")
         
@@ -357,7 +357,7 @@ def configure_interactive():
     # Get user selections
     try:
         # Get speaker output
-        speaker_input_str = input("1. Speaker/Monitor (OUTPUT - enter number): ")
+        speaker_input_str = input("1. Profile 1 Output (OUTPUT - enter number): ")
         if speaker_input_str.lower() == 'q':
             print("Configuration cancelled.")
             return
@@ -369,7 +369,7 @@ def configure_interactive():
         speaker_name = output_devices[speaker_idx]['name']
         
         # Get speaker input
-        speaker_input_letter = input("2. Secondary Microphone - webcam, etc. (INPUT - enter letter): ").upper()
+        speaker_input_letter = input("2. Profile 1 Input (INPUT - enter letter): ").upper()
         if speaker_input_letter == 'Q':
             print("Configuration cancelled.")
             return
@@ -384,7 +384,7 @@ def configure_interactive():
         speaker_input_name = input_devices[speaker_input_idx]['name']
         
         # Get headset output
-        headset_output_str = input("3. Headset Output (OUTPUT - enter number): ")
+        headset_output_str = input("3. Profile 2 Output (OUTPUT - enter number): ")
         if headset_output_str.lower() == 'q':
             print("Configuration cancelled.")
             return
@@ -396,7 +396,7 @@ def configure_interactive():
         headset_output_name = output_devices[headset_output_idx]['name']
         
         # Get headset input
-        headset_input_letter = input("4. Headset Microphone (INPUT - enter letter): ").upper()
+        headset_input_letter = input("4. Profile 2 Input (INPUT - enter letter): ").upper()
         if headset_input_letter == 'Q':
             print("Configuration cancelled.")
             return
@@ -412,10 +412,10 @@ def configure_interactive():
         
         # Show configuration
         print("\nYour configuration:")
-        print(f"  1. Speaker Output: {speaker_name}")
-        print(f"  2. Speaker Input: {speaker_input_name}")
-        print(f"  3. Headset Output: {headset_output_name}")
-        print(f"  4. Headset Input: {headset_input_name}")
+        print(f"  1. Profile 1 Output: {speaker_name}")
+        print(f"  2. Profile 1 Input: {speaker_input_name}")
+        print(f"  3. Profile 2 Output: {headset_output_name}")
+        print(f"  4. Profile 2 Input: {headset_input_name}")
         
         confirm = input("\nSave this configuration? (Y/n): ")
         if confirm.lower() != 'n':

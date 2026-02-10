@@ -94,10 +94,10 @@ All platforms use an interactive configuration wizard that:
   [B] USB Headset Mic
   [C] Webcam Microphone
 
-1. Speaker/Monitor (OUTPUT - enter number): 0
-2. Secondary Microphone (INPUT - enter letter): A
-3. Headset Output (OUTPUT - enter number): 1
-4. Headset Microphone (INPUT - enter letter): B
+1. Profile 1 Output (OUTPUT - enter number): 0
+2. Profile 1 Input (INPUT - enter letter): A
+3. Profile 2 Output (OUTPUT - enter number): 1
+4. Profile 2 Input (INPUT - enter letter): B
 ```
 
 ## Use Cases
