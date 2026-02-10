@@ -164,7 +164,13 @@ class AudioToggle(rumps.App):
         applescript = f'''
         tell application "Terminal"
             activate
-            do script "cd {script_path.parent} && python3 {script_path} --configure"
+            set newWindow to do script "cd {script_path.parent} && python3 {script_path} --configure"
+            repeat
+                delay 0.5
+                if not busy of newWindow then exit repeat
+            end repeat
+            delay 0.5
+            close (every window whose id = (id of newWindow))
         end tell
         '''
         subprocess.run(['osascript', '-e', applescript])
