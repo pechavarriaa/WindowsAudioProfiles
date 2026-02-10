@@ -64,13 +64,13 @@ curl -fsSL https://raw.githubusercontent.com/pechavarriaa/CrossPlatformAudioTogg
 
 The application allows you to configure two audio profiles:
 
-1. **Profile 1 (Speakers/Desktop)**
-   - Output: Your desktop speakers or monitor audio (Profile 1 Output)
-   - Input: Your webcam or secondary microphone (Profile 1 Input)
+1. **Profile 1 (Headset/Headphones)**
+   - Output: Your headset or headphones
+   - Input: Your headset microphone
 
-2. **Profile 2 (Headset/Headphones)**
-   - Output: Your headset or headphones (Profile 2 Output)
-   - Input: Your headset microphone (Profile 2 Input)
+2. **Profile 2 (Speakers/Desktop)**
+   - Output: Your desktop speakers or monitor audio
+   - Input: Your webcam or secondary microphone
 
 With a single click, toggle between these two configurations - both output and input devices switch automatically.
 
@@ -184,6 +184,6 @@ If you find this project helpful, consider:
 ---
 
 **Platform-Specific Documentation:**
-- [Windows Documentation](https://github.com/pechavarriaa/CrossPlatformAudioToggle/blob/main/README.md) (on main branch)
+- [Windows Documentation](https://github.com/pechavarriaa/CrossPlatformAudioToggle/blob/main/README.md)
 - [macOS Documentation](README_MAC.md)
 - [Linux Documentation](README_LINUX.md)
