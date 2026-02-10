@@ -129,13 +129,6 @@ EOF
 echo -e "\n${GREEN}=== Installation Complete ===${NC}\n"
 echo -e "Installation directory: ${CYAN}$INSTALL_DIR${NC}"
 echo -e "Configuration directory: ${CYAN}$CONFIG_DIR${NC}"
-echo -e "\n${YELLOW}Next steps:${NC}"
-echo -e "1. Configure your audio devices:"
-echo -e "   ${CYAN}python3 $INSTALL_DIR/$SCRIPT_NAME --configure${NC}"
-echo -e "\n2. The app will start automatically on login"
-echo -e "   You can also start it manually:"
-echo -e "   ${CYAN}python3 $INSTALL_DIR/$SCRIPT_NAME &${NC}"
-echo -e "\n3. Look for the audio icon in your system tray"
 
 # Ask if user wants to configure now
 echo -e "\n"
@@ -143,13 +136,14 @@ read -p "Configure audio devices now? (Y/n): " -n 1 -r
 echo
 if [[ ! $REPLY =~ ^[Nn]$ ]]; then
     python3 "$INSTALL_DIR/$SCRIPT_NAME" --configure
-    
+
     echo -e "\n${YELLOW}Starting Audio Toggle...${NC}"
     python3 "$INSTALL_DIR/$SCRIPT_NAME" &
     echo -e "${GREEN}✓ Audio Toggle is now running in your system tray!${NC}"
-else
-    echo -e "\nYou can configure later with:"
-    echo -e "${CYAN}python3 $INSTALL_DIR/$SCRIPT_NAME --configure${NC}"
 fi
 
+echo -e "\n${YELLOW}To reconfigure later:${NC}"
+echo -e "  ${CYAN}python3 $INSTALL_DIR/$SCRIPT_NAME --configure${NC}"
+echo -e "  Or right-click the system tray icon and select 'Configure Devices...'"
+echo -e "\n${YELLOW}Note:${NC} The app will start automatically on login"
 echo -e "\nTo uninstall: ${CYAN}bash uninstall_linux.sh${NC}\n"

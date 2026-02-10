@@ -110,12 +110,21 @@ launchctl load "$LAUNCH_AGENTS_DIR/$PLIST_NAME"
 echo -e "\n${GREEN}=== Installation Complete ===${NC}\n"
 echo -e "Installation directory: ${CYAN}$INSTALL_DIR${NC}"
 echo -e "Configuration directory: ${CYAN}$CONFIG_DIR${NC}"
-echo -e "\n${YELLOW}Next steps:${NC}"
-echo -e "1. Configure your audio devices:"
-echo -e "   ${CYAN}python3 $INSTALL_DIR/$SCRIPT_NAME --configure${NC}"
-echo -e "\n2. The app will start automatically and appear in your menu bar (🔊)"
-echo -e "\n3. To reconfigure later, click the menu bar icon and select 'Configure Devices...'"
 
-echo -e "\n${GREEN}✓ Audio Toggle has been installed and started via LaunchAgent!${NC}"
-echo -e "The app should appear in your menu bar shortly (🔊)"
-echo -e "\nTo uninstall: ${CYAN}bash uninstall_mac.sh${NC}"
+# Ask if user wants to configure now
+echo -e "\n"
+read -p "Configure audio devices now? (Y/n): " -n 1 -r
+echo
+if [[ ! $REPLY =~ ^[Nn]$ ]]; then
+    python3 "$INSTALL_DIR/$SCRIPT_NAME" --configure
+
+    echo -e "\n${YELLOW}Restarting Audio Toggle with your configuration...${NC}"
+    launchctl unload "$LAUNCH_AGENTS_DIR/$PLIST_NAME" 2>/dev/null || true
+    launchctl load "$LAUNCH_AGENTS_DIR/$PLIST_NAME"
+    echo -e "${GREEN}✓ Audio Toggle is now running in your menu bar! (🔊)${NC}"
+fi
+
+echo -e "\n${YELLOW}To reconfigure later:${NC}"
+echo -e "  ${CYAN}python3 $INSTALL_DIR/$SCRIPT_NAME --configure${NC}"
+echo -e "  Or click the menu bar icon (🔊) and select 'Configure Devices...'"
+echo -e "\nTo uninstall: ${CYAN}bash uninstall_mac.sh${NC}\n"

@@ -126,13 +126,13 @@ After installation, the app appears in the system tray:
 
 The application switches between two audio configurations:
 
-**Configuration 1 (Headset mode):**
-- Output: Your headset speakers
-- Input: Your headset microphone
+**Profile 1:**
+- Output: Your primary output (e.g., Speakers/Monitor)
+- Input: Your primary input (e.g., Webcam/Stand microphone)
 
-**Configuration 2 (Desktop mode):**
-- Output: Your desktop speakers/monitor
-- Input: Your webcam/secondary microphone
+**Profile 2:**
+- Output: Your secondary output (e.g., Headset)
+- Input: Your secondary input (e.g., Headset microphone)
 
 To reconfigure at any time:
 ```bash

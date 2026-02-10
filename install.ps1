@@ -162,7 +162,7 @@ if (-not $Silent) {
         # Get speaker (with validation loop)
         $validSpeaker = $false
         while (-not $validSpeaker) {
-            Write-Host "1. Speaker/Monitor (OUTPUT - enter number):" -ForegroundColor Cyan
+            Write-Host "1. Profile 1 Output (OUTPUT - enter number):" -ForegroundColor Cyan
             $speakerInput = Read-Host "   "
             if ($speakerInput -eq 'q') { Write-Host "Cancelled." -ForegroundColor Yellow; return }
             try {
@@ -176,7 +176,7 @@ if (-not $Silent) {
         # Get secondary mic (with validation loop)
         $validSecondMic = $false
         while (-not $validSecondMic) {
-            Write-Host "2. Secondary Microphone - webcam, etc. (INPUT - enter letter):" -ForegroundColor Cyan
+            Write-Host "2. Profile 1 Input (INPUT - enter letter):" -ForegroundColor Cyan
             $secondMicLetter = (Read-Host "   ").ToUpper()
             if ($secondMicLetter -eq 'Q') { Write-Host "Cancelled." -ForegroundColor Yellow; return }
             $secondMicIdx = [array]::IndexOf($letters, $secondMicLetter)
@@ -188,7 +188,7 @@ if (-not $Silent) {
         # Get headset output (with validation loop)
         $validHeadsetOut = $false
         while (-not $validHeadsetOut) {
-            Write-Host "3. Headset Output (OUTPUT - enter number):" -ForegroundColor Cyan
+            Write-Host "3. Profile 2 Output (OUTPUT - enter number):" -ForegroundColor Cyan
             $headsetOutInput = Read-Host "   "
             if ($headsetOutInput -eq 'q') { Write-Host "Cancelled." -ForegroundColor Yellow; return }
             try {
@@ -202,7 +202,7 @@ if (-not $Silent) {
         # Get headset mic (with validation loop)
         $validHeadsetIn = $false
         while (-not $validHeadsetIn) {
-            Write-Host "4. Headset Microphone (INPUT - enter letter):" -ForegroundColor Cyan
+            Write-Host "4. Profile 2 Input (INPUT - enter letter):" -ForegroundColor Cyan
             $headsetInLetter = (Read-Host "   ").ToUpper()
             if ($headsetInLetter -eq 'Q') { Write-Host "Cancelled." -ForegroundColor Yellow; return }
             $headsetInIdx = [array]::IndexOf($letters, $headsetInLetter)
@@ -219,10 +219,10 @@ if (-not $Silent) {
         
         Write-Host ""
         Write-Host "Your configuration:" -ForegroundColor Green
-        Write-Host "  1. Speaker: $speakerDevice"
-        Write-Host "  2. Secondary Mic: $secondMicDevice"
-        Write-Host "  3. Headset Output: $headsetOutput"
-        Write-Host "  4. Headset Mic: $headsetInput"
+        Write-Host "  1. Profile 1 Output: $speakerDevice"
+        Write-Host "  2. Profile 1 Input: $secondMicDevice"
+        Write-Host "  3. Profile 2 Output: $headsetOutput"
+        Write-Host "  4. Profile 2 Input: $headsetInput"
         Write-Host ""
         
         $confirm = Read-Host "Save this configuration? (Y/n/r to redo)"
