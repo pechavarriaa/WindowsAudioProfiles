@@ -184,6 +184,6 @@ If you find this project helpful, consider:
 ---
 
 **Platform-Specific Documentation:**
-- [Windows Documentation](https://github.com/pechavarriaa/CrossPlatformAudioToggle/blob/main/README.md) (on main branch)
+- [Windows Documentation](https://github.com/pechavarriaa/CrossPlatformAudioToggle/blob/main/README.md)
 - [macOS Documentation](README_MAC.md)
 - [Linux Documentation](README_LINUX.md)
