@@ -8,7 +8,7 @@
 .PARAMETER Reconfigure
     Skip download and just reconfigure device settings.
 .LINK
-    https://github.com/pechavarriaa/WindowsAudioProfiles
+    https://github.com/pechavarriaa/CrossPlatformAudioToggle
 #>
 
 param(
@@ -20,7 +20,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-$repoUrl = "https://raw.githubusercontent.com/pechavarriaa/WindowsAudioProfiles/main"
+$repoUrl = "https://raw.githubusercontent.com/pechavarriaa/CrossPlatformAudioToggle/main"
 $installDir = Join-Path $env:LOCALAPPDATA "AudioToggle"
 $scriptPath = Join-Path $installDir "toggleAudio.ps1"
 

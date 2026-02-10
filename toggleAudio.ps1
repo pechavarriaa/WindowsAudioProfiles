@@ -320,7 +320,7 @@ $menuConfigure.Add_Click({
         Start-Process powershell -ArgumentList "-NoExit", "-ExecutionPolicy", "Bypass", "-File", "`"$installPath`"", "-Reconfigure"
     } else {
         # Download and run if not found locally
-        Start-Process powershell -ArgumentList "-NoExit", "-ExecutionPolicy", "Bypass", "-Command", "irm https://raw.githubusercontent.com/pechavarriaa/WindowsAudioProfiles/main/install.ps1 | iex; install.ps1 -Reconfigure"
+        Start-Process powershell -ArgumentList "-NoExit", "-ExecutionPolicy", "Bypass", "-Command", "irm https://raw.githubusercontent.com/pechavarriaa/CrossPlatformAudioToggle/main/install.ps1 | iex; install.ps1 -Reconfigure"
     }
 })
 $contextMenu.Items.Add($menuConfigure)

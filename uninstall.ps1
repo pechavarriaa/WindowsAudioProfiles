@@ -5,7 +5,7 @@
 .DESCRIPTION
     Removes the Audio Toggle utility and all shortcuts.
 .LINK
-    https://github.com/pechavarriaa/WindowsAudioProfiles
+    https://github.com/pechavarriaa/CrossPlatformAudioToggle
 #>
 
 $ErrorActionPreference = "SilentlyContinue"

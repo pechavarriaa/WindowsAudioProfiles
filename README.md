@@ -1,161 +1,189 @@
-# PowerShell Audio Device Switcher - Windows System Tray Tool
+# Audio Toggle - Cross-Platform Audio Device Switcher
 
-A lightweight PowerShell script that adds a **system tray icon** to quickly toggle between audio devices on Windows 10/11. Switch between headphones and speakers with a single click—no third-party software required.
+A lightweight application that adds a **system tray/menu bar icon** to quickly toggle between audio devices. Switch between headphones and speakers with a single click. Available for **Windows**, **macOS**, and **Linux**.
 
 ## Quick Install
 
+### Windows 10/11
 Run this in PowerShell:
 ```powershell
-irm https://raw.githubusercontent.com/pechavarriaa/WindowsAudioProfiles/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/pechavarriaa/CrossPlatformAudioToggle/main/install.ps1 | iex
 ```
 
-The installer will:
-1. Download the script
-2. Show your available audio devices
-3. Let you pick your devices by number
-4. Save your configuration automatically
+### macOS
+Run this in Terminal:
+```bash
+curl -fsSL https://raw.githubusercontent.com/pechavarriaa/CrossPlatformAudioToggle/main/install_mac.sh | bash
+```
 
-**With options:**
-```powershell
-# Add to startup + desktop shortcut
-irm https://raw.githubusercontent.com/pechavarriaa/WindowsAudioProfiles/main/install.ps1 -OutFile install.ps1; .\install.ps1 -AddToStartup -DesktopShortcut
+### Linux (Ubuntu, Fedora, Arch, openSUSE)
+Run this in your terminal:
+```bash
+curl -fsSL https://raw.githubusercontent.com/pechavarriaa/CrossPlatformAudioToggle/main/install_linux.sh | bash
 ```
 
 ## Features
 
-- **One-Click Audio Switching** - Left-click the tray icon to instantly switch between audio configurations
-- **System Tray Integration** - Runs silently in the background with no console window
-- **Balloon Notifications** - Visual feedback showing which audio device is now active
-- **No Dependencies** - Pure PowerShell using native Windows Core Audio API
-- **Lightweight** - Minimal resource usage, starts instantly
-- **Customizable** - Easily configure your own audio device names
+- **One-Click Audio Switching** - Toggle between audio configurations instantly
+- **System Tray/Menu Bar Integration** - Native integration for each platform
+- **Auto-Start Support** - Automatically starts when you log in
+- **Two Audio Profiles** - Configure headset and speakers/desktop setups
+- **Visual Notifications** - Feedback when audio devices switch
+- **Lightweight** - Minimal resource usage
+- **Easy Configuration** - Interactive device selection on first run
 
-## Use Cases
+## Platform-Specific Details
 
-- Switch between gaming headset and desktop speakers
-- Toggle between work headphones and meeting speakerphone
-- Quick audio output switching for streaming/recording
-- Accessibility: avoid digging through Windows Sound settings
+### Windows
+- **Technology**: PowerShell with Windows Forms
+- **Audio API**: Core Audio API
+- **System Tray**: Native Windows tray icon
+- **Requirements**: Windows 10/11, PowerShell 5.1+
+- **Auto-Start**: Startup folder integration
 
-## Requirements
+### macOS
+- **Technology**: Python 3 with rumps (menu bar library)
+- **Audio API**: SwitchAudioSource CLI (CoreAudio wrapper)
+- **Menu Bar**: Native macOS menu bar icon (🔊)
+- **Requirements**: macOS 10.14+, Python 3.7+, Homebrew
+- **Auto-Start**: LaunchAgents
+- **Dependencies**: Automatically installed (SwitchAudioSource, rumps)
+- **[Full macOS Documentation →](README_MAC.md)**
 
-- Windows 10 or Windows 11
-- PowerShell 5.1 (pre-installed on Windows)
-- No admin rights required
-
-## Manual Installation
-
-1. **Download** `toggleAudio.ps1` to a folder of your choice
-
-2. **Unblock the file** (if downloaded from the internet):
-   ```powershell
-   Unblock-File -Path "C:\path\to\toggleAudio.ps1"
-   ```
-
-3. **Edit device names** in the script to match your audio devices:
-   ```powershell
-   $speakerDevice = "Speakers (Your Speaker Name)"
-   $headsetOutput = "Headphones (Your Headphone Name)"
-   $headsetInput = "Microphone (Your Headset Mic Name)"
-   $secondMicDevice = "Microphone (Your Webcam/Alt Mic Name)"
-   ```
-
-   To find your exact device names, run this in PowerShell after loading the script:
-   ```powershell
-   . .\toggleAudio.ps1
-   Get-AudioDevices
-   ```
-
-4. **Create a shortcut** for the taskbar:
-   - Right-click on Desktop → New → Shortcut
-   - Target: `powershell.exe -WindowStyle Hidden -ExecutionPolicy Bypass -File "C:\path\to\toggleAudio.ps1"`
-   - Name it "Audio Toggle"
-   - Pin to taskbar or add to Startup folder
-
-## Usage
-
-### System Tray Mode (Recommended)
-Run via the shortcut created above. The icon appears in the system tray:
-- **Left-click**: Toggle between audio configurations
-- **Right-click**: Menu with Toggle and Exit options
-
-### Command Line Mode
-```powershell
-# Load the script
-. .\toggleAudio.ps1
-
-# Toggle audio devices
-Toggle-AudioSetup
-
-# List all audio devices
-Get-AudioDevices
-```
-
-### Auto-Start with Windows
-1. Press `Win + R`, type `shell:startup`
-2. Copy your shortcut to this folder
-
-## Configuration
-
-The script switches between two audio configurations:
-
-**Configuration 1 (Headset mode):**
-- Output: Your headset speakers
-- Input: Your headset microphone
-
-**Configuration 2 (Desktop mode):**
-- Output: Your desktop speakers/monitor
-- Input: Your webcam/secondary microphone
-
-The installer will guide you through selecting your devices, or you can edit the variables at the top of the script manually.
-
-## Troubleshooting
-
-### "Script cannot be loaded" error
-```powershell
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-```
-
-### "File is blocked" warning
-```powershell
-Unblock-File -Path "C:\path\to\toggleAudio.ps1"
-```
-
-### C# compilation error with `?.` operator
-This happens when running via shortcut with older .NET Framework. The script has been updated to avoid this—ensure you have the latest version.
-
-### Device not found
-Run `Get-AudioDevices` to see the exact device names Windows uses, then update the script variables to match exactly (including parentheses and spaces).
+### Linux
+- **Technology**: Python 3 with GTK3 and AppIndicator3
+- **Audio API**: pactl (PulseAudio/PipeWire compatible)
+- **System Tray**: AppIndicator3 (works on most desktop environments)
+- **Requirements**: Python 3.6+, PulseAudio or PipeWire
+- **Auto-Start**: XDG autostart
+- **Supported Distros**: Ubuntu, Debian, Fedora, RHEL, Arch, Manjaro, openSUSE
+- **Desktop Environments**: KDE, XFCE, Cinnamon, MATE, Budgie (GNOME requires extension)
+- **[Full Linux Documentation →](README_LINUX.md)**
 
 ## How It Works
 
-The script uses the Windows Core Audio API (MMDevice API) via inline C# code compiled at runtime. It:
+The application allows you to configure two audio profiles:
 
-1. Queries the current default audio endpoint
-2. Determines which configuration is active
-3. Switches to the alternate configuration
-4. Sets both Console and Multimedia roles for seamless switching
+1. **Profile 1 (Headset/Headphones)**
+   - Output: Your headset or headphones
+   - Input: Your headset microphone
 
-No external DLLs or modules required—everything is built into Windows.
+2. **Profile 2 (Speakers/Desktop)**
+   - Output: Your desktop speakers or monitor audio
+   - Input: Your webcam or secondary microphone
+
+With a single click, toggle between these two configurations - both output and input devices switch automatically.
+
+## Configuration
+
+All platforms use an interactive configuration wizard that:
+1. Lists all available audio devices
+2. Uses **NUMBERS** for output devices (speakers/headphones)
+3. Uses **LETTERS** for input devices (microphones)
+4. Saves your preferences to a configuration file
+
+### Example Configuration
+```
+=== OUTPUT DEVICES - Use NUMBERS ===
+  [0] Built-in Speakers
+  [1] USB Headset
+  [2] Bluetooth Headphones
+
+=== INPUT DEVICES - Use LETTERS ===
+  [A] Built-in Microphone
+  [B] USB Headset Mic
+  [C] Webcam Microphone
+
+1. Speaker/Monitor (OUTPUT - enter number): 0
+2. Secondary Microphone (INPUT - enter letter): A
+3. Headset Output (OUTPUT - enter number): 1
+4. Headset Microphone (INPUT - enter letter): B
+```
+
+## Use Cases
+
+- **Gaming**: Quick switch between gaming headset and desktop speakers
+- **Work**: Toggle between work headphones and meeting speakerphone
+- **Streaming**: Easy audio output switching for broadcasting
+- **Accessibility**: Avoid digging through system sound settings repeatedly
 
 ## Uninstall
 
+### Windows
 ```powershell
-irm https://raw.githubusercontent.com/pechavarriaa/WindowsAudioProfiles/main/uninstall.ps1 | iex
+# From the install directory
+.\uninstall.ps1
 ```
 
-## Keywords
+### macOS
+```bash
+bash uninstall_mac.sh
+# Or via curl:
+curl -fsSL https://raw.githubusercontent.com/pechavarriaa/CrossPlatformAudioToggle/main/uninstall_mac.sh | bash
+```
 
-Windows audio switcher, PowerShell audio toggle, system tray audio switcher, change default audio device script, Windows 10 audio hotkey, Windows 11 sound output switcher, headphone speaker toggle, gaming audio switch, MMDevice API PowerShell, Core Audio API script, no-install audio switcher, portable audio toggle Windows
+### Linux
+```bash
+bash uninstall_linux.sh
+# Or via curl:
+curl -fsSL https://raw.githubusercontent.com/pechavarriaa/CrossPlatformAudioToggle/main/uninstall_linux.sh | bash
+```
+
+## Platform Comparison
+
+| Feature | Windows | macOS | Linux |
+|---------|---------|-------|-------|
+| **Language** | PowerShell | Python 3 | Python 3 |
+| **System Tray** | ✅ Native | ✅ Menu Bar | ✅ AppIndicator |
+| **Auto-Start** | ✅ Startup Folder | ✅ LaunchAgents | ✅ XDG Autostart |
+| **Dependencies** | None | Homebrew, rumps | GTK3, AppIndicator3 |
+| **Audio System** | Core Audio API | CoreAudio | PulseAudio/PipeWire |
+| **Install Time** | < 1 min | 2-3 min | 2-3 min |
+| **Configuration** | Numbers/Letters | Numbers/Letters | Numbers/Letters |
+
+## Troubleshooting
+
+### Windows
+- Check PowerShell version: `$PSVersionTable.PSVersion`
+- Verify script execution: `Get-ExecutionPolicy`
+- Check system tray for icon
+
+### macOS
+- Check logs: `tail -f ~/Library/Logs/audio_toggle.log`
+- Verify SwitchAudioSource: `which SwitchAudioSource`
+- Check LaunchAgent: `launchctl list | grep audiotoggle`
+
+### Linux
+- Check PulseAudio/PipeWire: `pactl info`
+- Verify system tray support: Install gnome-shell-extension-appindicator for GNOME
+- Check autostart: `ls ~/.config/autostart/`
+
+## Contributing
+
+Contributions welcome! Feel free to:
+- Report bugs or request features
+- Submit pull requests for improvements
+- Add support for additional platforms or features
+- Improve documentation
 
 ## License
 
 MIT License - Free to use, modify, and distribute.
 
-## Contributing
+Copyright (c) Pablo Echavarria
 
-Feel free to fork and submit pull requests for:
-- Additional audio configurations
-- Hotkey support
-- Custom tray icons
-- Multi-monitor/multi-device scenarios
+See [LICENSE](LICENSE) file for details.
+
+## Support
+
+If you find this project helpful, consider:
+- ⭐ Starring the repository
+- 🐛 Reporting bugs or suggesting features
+- 💝 [Supporting the developer](DONATE.md)
+
+---
+
+**Platform-Specific Documentation:**
+- [Windows Documentation](https://github.com/pechavarriaa/CrossPlatformAudioToggle/blob/main/README.md) (on main branch)
+- [macOS Documentation](README_MAC.md)
+- [Linux Documentation](README_LINUX.md)

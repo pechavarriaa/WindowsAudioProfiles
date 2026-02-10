@@ -1,6 +1,6 @@
 # Donate
 
-If you find **WindowsAudioProfiles** useful, you can support development here:
+If you find **CrossPlatformAudioToggle** useful, you can support development here:
 
 ## Solana
 
