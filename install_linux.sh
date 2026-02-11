@@ -40,7 +40,7 @@ install_dependencies() {
     case "$DISTRO" in
         ubuntu|debian|linuxmint|pop)
             echo -e "Installing packages for Debian/Ubuntu-based system..."
-            sudo apt update
+            sudo apt update || true
             sudo apt install -y python3 python3-pip python3-gi gir1.2-appindicator3-0.1 libnotify-bin pulseaudio-utils
             ;;
         fedora|rhel|centos)
@@ -58,7 +58,7 @@ install_dependencies() {
         *)
             echo -e "${YELLOW}Warning: Unsupported distribution. Attempting to install with apt...${NC}"
             if command -v apt &> /dev/null; then
-                sudo apt update
+                sudo apt update || true
                 sudo apt install -y python3 python3-pip python3-gi gir1.2-appindicator3-0.1 libnotify-bin pulseaudio-utils
             elif command -v dnf &> /dev/null; then
                 sudo dnf install -y python3 python3-pip python3-gobject gtk3 libappindicator-gtk3 libnotify pulseaudio-utils
