@@ -40,6 +40,14 @@ function Write-Success {
     }
 }
 
+function ConvertTo-SavedDeviceName {
+    param([string]$Name)
+    if ([string]::IsNullOrWhiteSpace($Name)) { return $Name }
+    $cleaned = $Name -replace '^\s*(?:\d+|[A-Za-z])\s*[-:]\s*', ''
+    $cleaned = $cleaned -replace '\(\s*(?:\d+|[A-Za-z])\s*-\s*', '('
+    return $cleaned
+}
+
 # Create shortcut helper function - defined early so we can use it
 
 function New-Shortcut {
@@ -243,6 +251,12 @@ if (-not $Silent) {
         $configured = $true
     }
     
+    # Persist clean endpoint names only (without chooser prefixes)
+    $speakerDevice = ConvertTo-SavedDeviceName $speakerDevice
+    $secondMicDevice = ConvertTo-SavedDeviceName $secondMicDevice
+    $headsetOutput = ConvertTo-SavedDeviceName $headsetOutput
+    $headsetInput = ConvertTo-SavedDeviceName $headsetInput
+
     # Update the script with user's devices
     $scriptContent = $scriptContent -replace '\$speakerDevice = ".*?"', "`$speakerDevice = `"$speakerDevice`""
     $scriptContent = $scriptContent -replace '\$headsetOutput = ".*?"', "`$headsetOutput = `"$headsetOutput`""

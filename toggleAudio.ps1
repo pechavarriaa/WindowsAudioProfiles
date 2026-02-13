@@ -5,6 +5,7 @@ $csharpCode = @"
 using System;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
+using System.Text;
 
 
 namespace CoreAudioApi {
@@ -185,7 +186,105 @@ namespace CoreAudioApi {
         }
 
 
+        private static string NormalizeDeviceName(string name) {
+            if (string.IsNullOrEmpty(name)) return string.Empty;
+            string cleaned = name
+                .Replace("Ãƒâ€šÃ‚Â®", "®")
+                .Replace("Ã‚Â®", "®")
+                .Replace("Â®", "®")
+                .Replace("Ã‚Â", "")
+                .Replace("Â", "")
+                .Normalize(NormalizationForm.FormKC);
+
+            var sb = new StringBuilder(cleaned.Length);
+            bool lastWasSpace = false;
+            foreach (char c in cleaned) {
+                if (char.IsWhiteSpace(c)) {
+                    if (!lastWasSpace) {
+                        sb.Append(' ');
+                        lastWasSpace = true;
+                    }
+                } else {
+                    sb.Append(c);
+                    lastWasSpace = false;
+                }
+            }
+            return sb.ToString().Trim();
+        }
+
+        private static bool IsSelectionToken(string token) {
+            if (string.IsNullOrEmpty(token)) return false;
+            bool allDigits = true;
+            for (int i = 0; i < token.Length; i++) {
+                if (!char.IsDigit(token[i])) {
+                    allDigits = false;
+                    break;
+                }
+            }
+            if (allDigits) return true;
+            return token.Length == 1 && char.IsLetter(token[0]);
+        }
+
+        private static string StripSelectionPrefix(string normalizedName) {
+            if (string.IsNullOrEmpty(normalizedName)) return string.Empty;
+
+            // Leading token forms: "4- Name", "A: Name"
+            int i = 0;
+            while (i < normalizedName.Length && char.IsWhiteSpace(normalizedName[i])) i++;
+            int j = i;
+            while (j < normalizedName.Length && char.IsLetterOrDigit(normalizedName[j])) j++;
+            if (j > i) {
+                string token = normalizedName.Substring(i, j - i);
+                if (IsSelectionToken(token)) {
+                    int k = j;
+                    while (k < normalizedName.Length && char.IsWhiteSpace(normalizedName[k])) k++;
+                    if (k < normalizedName.Length && (normalizedName[k] == '-' || normalizedName[k] == ':')) {
+                        k++;
+                        while (k < normalizedName.Length && char.IsWhiteSpace(normalizedName[k])) k++;
+                        if (k < normalizedName.Length) normalizedName = normalizedName.Substring(k);
+                    }
+                }
+            }
+
+            // Parenthesized or inline token forms: "(4- ...)" or "Desktop Microphone 4- ..."
+            var sb = new StringBuilder(normalizedName.Length);
+            int p = 0;
+            while (p < normalizedName.Length) {
+                bool boundary = p == 0 || char.IsWhiteSpace(normalizedName[p - 1]) || normalizedName[p - 1] == '(' || normalizedName[p - 1] == '[' || normalizedName[p - 1] == '{';
+                if (boundary && char.IsLetterOrDigit(normalizedName[p])) {
+                    int q = p;
+                    while (q < normalizedName.Length && char.IsLetterOrDigit(normalizedName[q])) q++;
+                    string token = normalizedName.Substring(p, q - p);
+                    int r = q;
+                    while (r < normalizedName.Length && char.IsWhiteSpace(normalizedName[r])) r++;
+                    if (IsSelectionToken(token) && r < normalizedName.Length && normalizedName[r] == '-') {
+                        r++;
+                        while (r < normalizedName.Length && char.IsWhiteSpace(normalizedName[r])) r++;
+                        if (r < normalizedName.Length) {
+                            p = r;
+                            continue;
+                        }
+                    }
+                }
+                sb.Append(normalizedName[p]);
+                p++;
+            }
+
+            return sb.ToString().Trim();
+        }
+
+        private static string CanonicalizeForMatch(string name) {
+            string normalized = StripSelectionPrefix(NormalizeDeviceName(name));
+            var sb = new StringBuilder(normalized.Length);
+            foreach (char c in normalized) {
+                if (char.IsLetterOrDigit(c)) sb.Append(char.ToLowerInvariant(c));
+            }
+            return sb.ToString();
+        }
+
         private static string GetDeviceId(string deviceName) {
+            string normalizedTarget = NormalizeDeviceName(deviceName);
+            string canonicalTarget = CanonicalizeForMatch(deviceName);
             IMMDeviceCollection deviceCollection;
             deviceEnumerator.EnumAudioEndpoints(EDataFlow.eAll, 1, out deviceCollection);
             int count;
@@ -198,7 +297,14 @@ namespace CoreAudioApi {
                 PROPERTYKEY propertyKey = new PROPERTYKEY { fmtid = new Guid("a45c254e-df1c-4efd-8020-67d146a850e0"), pid = 14 }; // PKEY_Device_FriendlyName
                 PROPVARIANT propertyValue;
                 propertyStore.GetValue(ref propertyKey, out propertyValue);
-                if (Marshal.PtrToStringUni(propertyValue.pwszVal) == deviceName) {
+                string friendlyName = Marshal.PtrToStringUni(propertyValue.pwszVal);
+                string normalizedFriendly = NormalizeDeviceName(friendlyName);
+                string canonicalFriendly = CanonicalizeForMatch(friendlyName);
+                if (
+                    friendlyName == deviceName ||
+                    normalizedFriendly.Equals(normalizedTarget, StringComparison.OrdinalIgnoreCase) ||
+                    (canonicalTarget.Length > 0 && canonicalFriendly.Equals(canonicalTarget, StringComparison.OrdinalIgnoreCase))
+                ) {
                     string deviceId;
                     device.GetId(out deviceId);
                     return deviceId;
