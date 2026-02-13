@@ -332,6 +332,38 @@ if (-not ([System.Management.Automation.PSTypeName]'CoreAudioApi.CoreAudioContro
 }
 Add-Type -AssemblyName System.Windows.Forms
 
+# === AUDIO TOGGLE INSTANCE MARKER ===
+# Unique identifier to distinguish this script from others
+$Global:AUDIO_TOGGLE_INSTANCE_ID = "AudioToggle-pechavarriaa-CrossPlatformAudioToggle-v1.0"
+$Global:AUDIO_TOGGLE_INSTALL_PATH = $PSScriptRoot
+
+# === SINGLE INSTANCE CHECK ===
+# Ensure only one instance of Audio Toggle is running
+# Use installation path in mutex name to allow different installations to run simultaneously
+$installPathHash = [System.BitConverter]::ToString([System.Security.Cryptography.MD5]::Create().ComputeHash([System.Text.Encoding]::UTF8.GetBytes($PSScriptRoot))).Replace("-","").Substring(0,16)
+$mutexName = "Global\AudioToggle_$installPathHash"
+$mutex = New-Object System.Threading.Mutex($false, $mutexName)
+
+try {
+    # Try to acquire the mutex (wait 0 seconds = immediate check)
+    if (-not $mutex.WaitOne(0, $false)) {
+        # Another instance is already running - exit silently
+        Write-Host "Audio Toggle is already running." -ForegroundColor Yellow
+        exit 0
+    }
+} catch {
+    # If mutex creation fails, continue anyway (better to run than fail)
+    Write-Warning "Could not create single-instance mutex: $($_.Exception.Message)"
+}
+
+# Register cleanup to release mutex when script exits
+$null = Register-EngineEvent -SourceIdentifier PowerShell.Exiting -Action {
+    if ($mutex) {
+        $mutex.ReleaseMutex()
+        $mutex.Dispose()
+    }
+}
+
 # === LOAD CONFIGURATION FROM FILE ===
 $configPath = Join-Path $env:LOCALAPPDATA "AudioToggle\config.json"
 
@@ -501,6 +533,15 @@ $contextMenu.Items.Add((New-Object System.Windows.Forms.ToolStripSeparator))
 $menuExit = New-Object System.Windows.Forms.ToolStripMenuItem
 $menuExit.Text = "Exit"
 $menuExit.Add_Click({
+    # Clean up mutex before exiting
+    if ($mutex) {
+        try {
+            $mutex.ReleaseMutex()
+            $mutex.Dispose()
+        } catch {
+            # Ignore errors during cleanup
+        }
+    }
     $notifyIcon.Visible = $false
     $notifyIcon.Dispose()
     [System.Windows.Forms.Application]::Exit()
