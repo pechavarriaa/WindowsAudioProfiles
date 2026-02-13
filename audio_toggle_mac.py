@@ -8,6 +8,7 @@ import subprocess
 import json
 import os
 import sys
+import time
 from pathlib import Path
 
 try:
@@ -149,6 +150,9 @@ class AudioToggle(rumps.App):
         if not input_success:
             self.show_notification("Toggle Partial", f"Output switched but input failed")
             return
+        
+        # Brief delay to allow camera-embedded microphones to initialize
+        time.sleep(0.5)
         
         # Both switches succeeded
         self.show_notification("Audio Switched", f"Switched to {profile_name}\nOutput: {target_output}\nInput: {target_input}")

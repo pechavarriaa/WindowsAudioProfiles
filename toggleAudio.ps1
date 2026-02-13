@@ -239,6 +239,8 @@ function Toggle-AudioSetup {
             [CoreAudioApi.CoreAudioController]::SetDefaultDevice($secondMicDevice, [CoreAudioApi.ERole]::eConsole)
             [CoreAudioApi.CoreAudioController]::SetDefaultDevice($secondMicDevice, [CoreAudioApi.ERole]::eMultimedia)
             [CoreAudioApi.CoreAudioController]::SetDefaultDevice($secondMicDevice, [CoreAudioApi.ERole]::eCommunications)
+            # Brief delay to allow camera-embedded microphones to initialize
+            Start-Sleep -Milliseconds 500
             [CoreAudioApi.CoreAudioController]::SetDefaultDevice($speakerDevice, [CoreAudioApi.ERole]::eConsole)
             [CoreAudioApi.CoreAudioController]::SetDefaultDevice($speakerDevice, [CoreAudioApi.ERole]::eMultimedia)
             return "Switched to Profile 1"
@@ -253,6 +255,8 @@ function Toggle-AudioSetup {
             [CoreAudioApi.CoreAudioController]::SetDefaultDevice($headsetInput, [CoreAudioApi.ERole]::eConsole)
             [CoreAudioApi.CoreAudioController]::SetDefaultDevice($headsetInput, [CoreAudioApi.ERole]::eMultimedia)
             [CoreAudioApi.CoreAudioController]::SetDefaultDevice($headsetInput, [CoreAudioApi.ERole]::eCommunications)
+            # Brief delay to allow camera-embedded microphones to initialize
+            Start-Sleep -Milliseconds 500
             [CoreAudioApi.CoreAudioController]::SetDefaultDevice($headsetOutput, [CoreAudioApi.ERole]::eConsole)
             [CoreAudioApi.CoreAudioController]::SetDefaultDevice($headsetOutput, [CoreAudioApi.ERole]::eMultimedia)
             return "Switched to Profile 2"
