@@ -146,7 +146,17 @@ if (-not $Silent) {
     $csharpMatch = [regex]::Match($scriptContent, '\$csharpCode = @"(.+?)"@', [System.Text.RegularExpressions.RegexOptions]::Singleline)
     if ($csharpMatch.Success) {
         $csharpCode = $csharpMatch.Groups[1].Value
-        Add-Type -TypeDefinition $csharpCode -ErrorAction SilentlyContinue
+        # Only compile if not already loaded
+        if (-not ([System.Management.Automation.PSTypeName]'CoreAudioApi.CoreAudioController').Type) {
+            try {
+                Add-Type -TypeDefinition $csharpCode -ErrorAction Stop
+            } catch {
+                Write-Error "Failed to compile audio API code: $($_.Exception.Message)"
+                Write-Host "`nIf you see compilation errors, please ensure you're running PowerShell 5.1 or later." -ForegroundColor Yellow
+                Write-Host "Check your PowerShell version with: `$PSVersionTable.PSVersion" -ForegroundColor Gray
+                exit 1
+            }
+        }
     }
     
     Add-Type -AssemblyName System.Windows.Forms
