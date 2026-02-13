@@ -107,7 +107,50 @@ class AudioToggle:
             self.headset_output = ''
             self.speaker_input = ''
             self.headset_input = ''
-    
+
+    def get_short_device_name(self, device_name):
+        """
+        Simplify device names for display - matches Windows implementation
+        Extracts brand/model from parentheses and cleans up special characters
+        """
+        import re
+
+        # Extract content from parentheses if present
+        match = re.search(r'\(([^)]+)\)', device_name)
+        if match:
+            name = match.group(1)
+        else:
+            name = device_name
+
+        # Remove any remaining parentheses and their content (including partial ones)
+        name = re.sub(r'\([^)]*\)', '', name)   # Complete pairs like (R)
+        name = re.sub(r'\([^)]*$', '', name)    # Partial opening like (R
+        name = re.sub(r'\(', '', name)          # Any remaining (
+        name = re.sub(r'\)', '', name)          # Any remaining )
+        name = re.sub(r'\s+', ' ', name)        # Collapse multiple spaces
+        name = name.strip()
+
+        # Truncate if too long
+        if len(name) > 30:
+            name = name[:27] + "..."
+
+        return name
+
+    def get_device_display_name(self, device_id, device_type):
+        """
+        Convert device ID to friendly display name
+        device_type: 'sinks' or 'sources'
+        """
+        try:
+            devices = self.get_audio_devices(device_type)
+            for device in devices:
+                if device.get('id') == device_id:
+                    return device.get('name', device_id)
+            # Fallback to device ID if not found
+            return device_id
+        except Exception:
+            return device_id
+
     def save_config(self):
         """Save device configuration to file"""
         self.config_file.parent.mkdir(parents=True, exist_ok=True)
@@ -222,20 +265,38 @@ class AudioToggle:
         # Attempt to switch output device
         output_success = self.set_audio_device(target_output, 'sink')
         if not output_success:
-            self.show_notification("Toggle Failed", f"Failed to switch output to {target_output}")
+            self.show_notification("Audio Toggle", f"Failed to switch output to {target_output}")
             return
-        
+
         # Attempt to switch input device
         input_success = self.set_audio_device(target_input, 'source')
         if not input_success:
-            self.show_notification("Toggle Partial", f"Output switched but input failed")
+            self.show_notification("Audio Toggle", f"Output switched but input failed")
             return
-        
+
         # Brief delay to allow camera-embedded microphones to initialize
         time.sleep(0.5)
-        
+
         # Both switches succeeded
-        self.show_notification("Audio Switched", f"Switched to {profile_name}\nOutput: {target_output}\nInput: {target_input}")
+        # Get display names from device IDs
+        target_output_display = self.get_device_display_name(target_output, 'sinks')
+        target_input_display = self.get_device_display_name(target_input, 'sources')
+
+        # Shorten device names for display
+        out_short = self.get_short_device_name(target_output_display)
+        in_short = self.get_short_device_name(target_input_display)
+
+        # Determine full profile label
+        if profile_name == "Profile 1":
+            profile_label = "Profile 1 (Desktop)"
+        elif profile_name == "Profile 2":
+            profile_label = "Profile 2 (Headset)"
+        else:
+            profile_label = profile_name  # Fallback for edge cases
+
+        # Format notification to match Windows
+        message = f"{profile_label}\n🔊 {out_short}\n🎤 {in_short}"
+        self.show_notification("Audio Toggle", message)
     
     def show_notification(self, title, message):
         """Show desktop notification"""
