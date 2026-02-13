@@ -354,6 +354,17 @@ else {
     exit 1
 }
 
+function Get-ShortDeviceName {
+    param([string]$DeviceName)
+    # Simplify device names for display
+    $name = $DeviceName -replace '\([^)]*\)', '' # Remove parentheses content
+    $name = $name.Trim()
+    if ($name.Length -gt 25) {
+        $name = $name.Substring(0, 22) + "..."
+    }
+    return $name
+}
+
 function Toggle-AudioSetup {
     try {
         $currentPlayback = [CoreAudioApi.CoreAudioController]::GetDefaultAudioEndpoint([CoreAudioApi.EDataFlow]::eRender, [CoreAudioApi.ERole]::eConsole)
@@ -365,28 +376,34 @@ function Toggle-AudioSetup {
 
 
     if ($currentPlayback -eq $headsetOutput) {
-        # Switch to Profile 1
+        # Switch to Profile 1 (Desktop)
         try {
             [CoreAudioApi.CoreAudioController]::SetDefaultDevice($secondMicDevice, [CoreAudioApi.ERole]::eConsole)
             [CoreAudioApi.CoreAudioController]::SetDefaultDevice($secondMicDevice, [CoreAudioApi.ERole]::eMultimedia)
             [CoreAudioApi.CoreAudioController]::SetDefaultDevice($secondMicDevice, [CoreAudioApi.ERole]::eCommunications)
             [CoreAudioApi.CoreAudioController]::SetDefaultDevice($speakerDevice, [CoreAudioApi.ERole]::eConsole)
             [CoreAudioApi.CoreAudioController]::SetDefaultDevice($speakerDevice, [CoreAudioApi.ERole]::eMultimedia)
-            return "Switched to Profile 1"
+
+            $outShort = Get-ShortDeviceName $speakerDevice
+            $inShort = Get-ShortDeviceName $secondMicDevice
+            return "Profile 1 (Desktop)`n🔊 $outShort`n🎤 $inShort"
         }
         catch {
             return "Error: $($_.Exception.Message)"
         }
     }
     else {
-        # Switch to Profile 2
+        # Switch to Profile 2 (Headset)
         try {
             [CoreAudioApi.CoreAudioController]::SetDefaultDevice($headsetInput, [CoreAudioApi.ERole]::eConsole)
             [CoreAudioApi.CoreAudioController]::SetDefaultDevice($headsetInput, [CoreAudioApi.ERole]::eMultimedia)
             [CoreAudioApi.CoreAudioController]::SetDefaultDevice($headsetInput, [CoreAudioApi.ERole]::eCommunications)
             [CoreAudioApi.CoreAudioController]::SetDefaultDevice($headsetOutput, [CoreAudioApi.ERole]::eConsole)
             [CoreAudioApi.CoreAudioController]::SetDefaultDevice($headsetOutput, [CoreAudioApi.ERole]::eMultimedia)
-            return "Switched to Profile 2"
+
+            $outShort = Get-ShortDeviceName $headsetOutput
+            $inShort = Get-ShortDeviceName $headsetInput
+            return "Profile 2 (Headset)`n🔊 $outShort`n🎤 $inShort"
         }
         catch {
             return "Error: $($_.Exception.Message)"
