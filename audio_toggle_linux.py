@@ -426,14 +426,18 @@ def parse_pactl_devices(device_type):
 def read_input_line(tty_file):
     """Read a line from tty_file with proper EOF handling.
     
-    Returns the stripped input string, or None if EOF/empty input.
+    Returns the stripped input string, or None if EOF/empty/whitespace-only input.
     """
     try:
         line = tty_file.readline()
         if line == '':
             # EOF reached - no more input available
             return None
-        return line.strip()
+        stripped = line.strip()
+        if stripped == '':
+            # Whitespace-only input treated as empty
+            return None
+        return stripped
     except (OSError, IOError):
         return None
 
@@ -479,6 +483,8 @@ def configure_interactive():
     
     # Letters for input devices (matching Windows installer pattern)
     letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P']
+    # Calculate the max valid letter for input devices (for error messages)
+    max_input_letter = letters[min(len(input_devices), len(letters)) - 1]
     
     # Display devices
     print("=== OUTPUT DEVICES (Speakers/Headphones) - Use NUMBERS ===")
@@ -499,7 +505,7 @@ def configure_interactive():
         # Get speaker output
         print("1. Profile 1 Output (OUTPUT - enter number): ", end='', flush=True)
         speaker_input_str = read_input_line(tty_file)
-        if speaker_input_str is None or speaker_input_str == '':
+        if speaker_input_str is None:
             print("\nError: No input received. Please run this command in an interactive terminal.")
             return
         if speaker_input_str.lower() == 'q':
@@ -518,7 +524,7 @@ def configure_interactive():
         # Get speaker input
         print("2. Profile 1 Input (INPUT - enter letter): ", end='', flush=True)
         speaker_input_letter = read_input_line(tty_file)
-        if speaker_input_letter is None or speaker_input_letter == '':
+        if speaker_input_letter is None:
             print("\nError: No input received. Please run this command in an interactive terminal.")
             return
         speaker_input_letter = speaker_input_letter.upper()
@@ -526,7 +532,7 @@ def configure_interactive():
             print("Configuration cancelled.")
             return
         if speaker_input_letter not in letters:
-            print(f"\nError: '{speaker_input_letter}' is not a valid letter (A-{letters[min(len(input_devices), len(letters))-1]}).")
+            print(f"\nError: '{speaker_input_letter}' is not a valid letter (A-{max_input_letter}).")
             return
         speaker_input_idx = letters.index(speaker_input_letter)
         if speaker_input_idx >= len(input_devices):
@@ -538,7 +544,7 @@ def configure_interactive():
         # Get headset output
         print("3. Profile 2 Output (OUTPUT - enter number): ", end='', flush=True)
         headset_output_str = read_input_line(tty_file)
-        if headset_output_str is None or headset_output_str == '':
+        if headset_output_str is None:
             print("\nError: No input received. Please run this command in an interactive terminal.")
             return
         if headset_output_str.lower() == 'q':
@@ -557,7 +563,7 @@ def configure_interactive():
         # Get headset input
         print("4. Profile 2 Input (INPUT - enter letter): ", end='', flush=True)
         headset_input_letter = read_input_line(tty_file)
-        if headset_input_letter is None or headset_input_letter == '':
+        if headset_input_letter is None:
             print("\nError: No input received. Please run this command in an interactive terminal.")
             return
         headset_input_letter = headset_input_letter.upper()
@@ -565,7 +571,7 @@ def configure_interactive():
             print("Configuration cancelled.")
             return
         if headset_input_letter not in letters:
-            print(f"\nError: '{headset_input_letter}' is not a valid letter (A-{letters[min(len(input_devices), len(letters))-1]}).")
+            print(f"\nError: '{headset_input_letter}' is not a valid letter (A-{max_input_letter}).")
             return
         headset_input_idx = letters.index(headset_input_letter)
         if headset_input_idx >= len(input_devices):
@@ -583,7 +589,8 @@ def configure_interactive():
         
         print("\nSave this configuration? (Y/n): ", end='', flush=True)
         confirm = read_input_line(tty_file)
-        # Treat empty input or None as 'yes' (default)
+        # For the save prompt, treat empty/None as 'yes' (default Y/n behavior)
+        # This differs from device selection prompts which require valid input
         if confirm is None:
             confirm = ''
         if confirm.lower() != 'n':
