@@ -423,6 +423,18 @@ def parse_pactl_devices(device_type):
         return []
 
 
+def get_input(prompt):
+    """Get input from user, reading from /dev/tty to handle piped stdin"""
+    sys.stdout.write(prompt)
+    sys.stdout.flush()
+    try:
+        with open('/dev/tty', 'r') as tty:
+            return tty.readline().strip()
+    except:
+        # Fallback to standard input if /dev/tty is not available
+        return input().strip()
+
+
 def configure_interactive():
     """Interactive configuration mode"""
     print("\n=== Configure Audio Toggle for Linux ===\n")
@@ -468,7 +480,7 @@ def configure_interactive():
     # Get user selections
     try:
         # Get speaker output
-        speaker_input_str = input("1. Profile 1 Output (OUTPUT - enter number): ")
+        speaker_input_str = get_input("1. Profile 1 Output (OUTPUT - enter number): ")
         if speaker_input_str.lower() == 'q':
             print("Configuration cancelled.")
             return
@@ -480,7 +492,7 @@ def configure_interactive():
         speaker_name = output_devices[speaker_idx]['name']
         
         # Get speaker input
-        speaker_input_letter = input("2. Profile 1 Input (INPUT - enter letter): ").upper()
+        speaker_input_letter = get_input("2. Profile 1 Input (INPUT - enter letter): ").upper()
         if speaker_input_letter == 'Q':
             print("Configuration cancelled.")
             return
@@ -495,7 +507,7 @@ def configure_interactive():
         speaker_input_name = input_devices[speaker_input_idx]['name']
         
         # Get headset output
-        headset_output_str = input("3. Profile 2 Output (OUTPUT - enter number): ")
+        headset_output_str = get_input("3. Profile 2 Output (OUTPUT - enter number): ")
         if headset_output_str.lower() == 'q':
             print("Configuration cancelled.")
             return
@@ -507,7 +519,7 @@ def configure_interactive():
         headset_output_name = output_devices[headset_output_idx]['name']
         
         # Get headset input
-        headset_input_letter = input("4. Profile 2 Input (INPUT - enter letter): ").upper()
+        headset_input_letter = get_input("4. Profile 2 Input (INPUT - enter letter): ").upper()
         if headset_input_letter == 'Q':
             print("Configuration cancelled.")
             return
@@ -528,7 +540,7 @@ def configure_interactive():
         print(f"  3. Profile 2 Output: {headset_output_name}")
         print(f"  4. Profile 2 Input: {headset_input_name}")
         
-        confirm = input("\nSave this configuration? (Y/n): ")
+        confirm = get_input("\nSave this configuration? (Y/n): ")
         if confirm.lower() != 'n':
             config_file = Path.home() / ".config" / "audio_toggle" / "config.json"
             config_file.parent.mkdir(parents=True, exist_ok=True)
