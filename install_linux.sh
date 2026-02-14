@@ -33,6 +33,28 @@ fi
 
 echo -e "Detected distribution: ${CYAN}$PRETTY_NAME${NC}\n"
 
+# Function to detect audio system
+detect_audio_system() {
+    if command -v pactl &> /dev/null; then
+        if pactl info 2>/dev/null | grep -q "Server Name.*PipeWire"; then
+            echo "pipewire"
+        else
+            echo "pulseaudio"
+        fi
+    else
+        # Check for installed packages
+        if command -v pacman &> /dev/null; then
+            if pacman -Qi pipewire-pulse &> /dev/null || pacman -Qi pipewire &> /dev/null; then
+                echo "pipewire"
+            else
+                echo "none"
+            fi
+        else
+            echo "none"
+        fi
+    fi
+}
+
 # Function to install dependencies based on distro
 install_dependencies() {
     echo -e "${CYAN}Installing dependencies...${NC}"
@@ -49,7 +71,21 @@ install_dependencies() {
             ;;
         arch|manjaro|endeavouros)
             echo -e "Installing packages for Arch-based system..."
-            sudo pacman -S --needed --noconfirm python python-pip python-gobject gtk3 libappindicator-gtk3 libnotify pulseaudio
+            
+            # Detect audio system
+            AUDIO_SYSTEM=$(detect_audio_system)
+            echo -e "${CYAN}Detected audio system: $AUDIO_SYSTEM${NC}"
+            
+            if [ "$AUDIO_SYSTEM" = "pipewire" ]; then
+                echo -e "${CYAN}PipeWire detected, installing PipeWire packages...${NC}"
+                sudo pacman -S --needed --noconfirm python python-pip python-gobject gtk3 libappindicator-gtk3 libnotify pipewire-pulse
+            elif [ "$AUDIO_SYSTEM" = "pulseaudio" ]; then
+                echo -e "${CYAN}PulseAudio detected, installing PulseAudio packages...${NC}"
+                sudo pacman -S --needed --noconfirm python python-pip python-gobject gtk3 libappindicator-gtk3 libnotify pulseaudio
+            else
+                echo -e "${YELLOW}No audio system detected. Installing PipeWire (modern default)...${NC}"
+                sudo pacman -S --needed --noconfirm python python-pip python-gobject gtk3 libappindicator-gtk3 libnotify pipewire-pulse
+            fi
             ;;
         opensuse*)
             echo -e "Installing packages for openSUSE..."
@@ -63,14 +99,20 @@ install_dependencies() {
             elif command -v dnf &> /dev/null; then
                 sudo dnf install -y python3 python3-pip python3-gobject gtk3 libappindicator-gtk3 libnotify pulseaudio-utils
             elif command -v pacman &> /dev/null; then
-                sudo pacman -S --needed --noconfirm python python-pip python-gobject gtk3 libappindicator-gtk3 libnotify pulseaudio
+                # Detect audio system for unknown distros using pacman
+                AUDIO_SYSTEM=$(detect_audio_system)
+                if [ "$AUDIO_SYSTEM" = "pipewire" ]; then
+                    sudo pacman -S --needed --noconfirm python python-pip python-gobject gtk3 libappindicator-gtk3 libnotify pipewire-pulse
+                else
+                    sudo pacman -S --needed --noconfirm python python-pip python-gobject gtk3 libappindicator-gtk3 libnotify pulseaudio
+                fi
             else
                 echo -e "${RED}Error: Cannot determine package manager. Please install dependencies manually:${NC}"
                 echo "  - Python 3"
                 echo "  - python3-gi (PyGObject)"
                 echo "  - gir1.2-appindicator3-0.1 (AppIndicator)"
                 echo "  - libnotify (notifications)"
-                echo "  - pulseaudio-utils (pactl command)"
+                echo "  - pulseaudio-utils or pipewire-pulse (pactl command)"
                 exit 1
             fi
             ;;

@@ -99,7 +99,11 @@ python3 ~/.local/share/audio_toggle/audio_toggle_linux.py &
 ### Arch Linux
 ```bash
 # Install dependencies
+# For PulseAudio systems:
 sudo pacman -S --needed python python-pip python-gobject gtk3 libappindicator-gtk3 libnotify pulseaudio
+
+# For PipeWire systems (modern default):
+sudo pacman -S --needed python python-pip python-gobject gtk3 libappindicator-gtk3 libnotify pipewire-pulse
 
 # Create directories and download (same as above)
 mkdir -p ~/.local/share/audio_toggle
@@ -183,8 +187,11 @@ sudo apt install pulseaudio-utils
 # Fedora
 sudo dnf install pulseaudio-utils
 
-# Arch
+# Arch Linux
+# For PulseAudio:
 sudo pacman -S pulseaudio
+# For PipeWire (modern default):
+sudo pacman -S pipewire-pulse
 ```
 
 ### Python dependencies not found
