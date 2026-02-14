@@ -192,10 +192,39 @@ echo -e "Installation directory: ${CYAN}$INSTALL_DIR${NC}"
 echo -e "Configuration directory: ${CYAN}$CONFIG_DIR${NC}"
 
 # Ask if user wants to configure now
-echo -e "\n"
-echo -n "Configure audio devices now? (Y/n): "
-read -n 1 -r < /dev/tty 2>/dev/null || REPLY="n"
-echo
+# Reconnect stdin to terminal for interactive input when script is piped (curl|sh)
+# This is POSIX-compatible and works across bash, zsh, and other shells
+if [ -t 0 ]; then
+    # stdin is already a terminal, read normally
+    TTY_FD=0
+else
+    # stdin is not a terminal (e.g., piped from curl)
+    # Open /dev/tty as file descriptor 3 for reading
+    if exec 3</dev/tty 2>/dev/null; then
+        TTY_FD=3
+    else
+        # Cannot open /dev/tty, skip configuration
+        echo -e "\n${YELLOW}Note: Non-interactive mode detected. Skipping configuration.${NC}"
+        echo -e "Run '${CYAN}python3 $INSTALL_DIR/$SCRIPT_NAME --configure${NC}' later to configure."
+        TTY_FD=""
+    fi
+fi
+
+if [ -n "$TTY_FD" ]; then
+    echo -e "\n"
+    echo -n "Configure audio devices now? (Y/n): "
+    # Read full line (POSIX-compatible, works in bash, zsh, and other shells)
+    if [ "$TTY_FD" = "0" ]; then
+        read -r REPLY
+    else
+        read -r REPLY <&3
+        # Close file descriptor 3 after reading
+        exec 3<&-
+    fi
+else
+    REPLY="n"
+fi
+
 if [[ ! $REPLY =~ ^[Nn]$ ]]; then
     python3 "$INSTALL_DIR/$SCRIPT_NAME" --configure
 
