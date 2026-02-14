@@ -77,7 +77,9 @@ else
     curl -fsSL "https://raw.githubusercontent.com/pechavarriaa/CrossPlatformAudioToggle/main/$SCRIPT_NAME" -o "$INSTALL_DIR/$SCRIPT_NAME"
     # Download template icon for dark theme support
     mkdir -p "$INSTALL_DIR/icons"
-    curl -fsSL "https://raw.githubusercontent.com/pechavarriaa/CrossPlatformAudioToggle/main/icons/speaker_template.png" -o "$INSTALL_DIR/icons/speaker_template.png"
+    if ! curl -fsSL "https://raw.githubusercontent.com/pechavarriaa/CrossPlatformAudioToggle/main/icons/speaker_template.png" -o "$INSTALL_DIR/icons/speaker_template.png"; then
+        echo -e "${YELLOW}Warning: Could not download icon file. The app will fall back to emoji icon.${NC}"
+    fi
 fi
 
 # Make script executable
