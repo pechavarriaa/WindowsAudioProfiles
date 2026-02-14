@@ -400,9 +400,10 @@ class AudioToggle:
                 continue
 
         # No terminal found - show notification with instructions
+        # Use quoted_path for a working command users can copy
         self.show_notification(
             "Configuration Error",
-            f"No terminal found. Please run manually:\npython3 {script_path} --configure"
+            f"No terminal found. Please run manually:\npython3 {quoted_path} --configure"
         )
     
     def quit(self, _):
