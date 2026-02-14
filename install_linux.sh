@@ -200,7 +200,11 @@ if [[ ! $REPLY =~ ^[Nn]$ ]]; then
     python3 "$INSTALL_DIR/$SCRIPT_NAME" --configure
 
     echo -e "\n${YELLOW}Starting Audio Toggle...${NC}"
-    python3 "$INSTALL_DIR/$SCRIPT_NAME" &
+    # Use nohup to keep process running after terminal closes (important for curl|bash installs)
+    # Redirect output to log file and disown to fully detach from shell
+    # Note: CONFIG_DIR is already created earlier in the script (line 149)
+    nohup python3 "$INSTALL_DIR/$SCRIPT_NAME" > "$CONFIG_DIR/audio_toggle.log" 2>&1 &
+    disown
     echo -e "${GREEN}✓ Audio Toggle is now running in your system tray!${NC}"
 fi
 
