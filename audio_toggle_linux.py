@@ -423,6 +423,25 @@ def parse_pactl_devices(device_type):
         return []
 
 
+def read_input_line(tty_file):
+    """Read a line from tty_file with proper EOF handling.
+    
+    Returns the stripped input string, or None if EOF/empty/whitespace-only input.
+    """
+    try:
+        line = tty_file.readline()
+        if line == '':
+            # EOF reached - no more input available
+            return None
+        stripped = line.strip()
+        if stripped == '':
+            # Whitespace-only input treated as empty
+            return None
+        return stripped
+    except (OSError, IOError):
+        return None
+
+
 def configure_interactive():
     """Interactive configuration mode"""
     # Open /dev/tty for reading input, with fallback to stdin
@@ -431,6 +450,13 @@ def configure_interactive():
         tty_file = open('/dev/tty', 'r', buffering=1)
     except (OSError, IOError):
         tty_file = sys.stdin
+    
+    # Check if we have a valid interactive terminal
+    if tty_file == sys.stdin and not sys.stdin.isatty():
+        print("\nError: No interactive terminal available.")
+        print("Please run this command directly in a terminal, not via a pipe.")
+        print("\nUsage: python3 audio_toggle_linux.py --configure")
+        return
     
     print("\n=== Configure Audio Toggle for Linux ===\n")
 
@@ -457,6 +483,8 @@ def configure_interactive():
     
     # Letters for input devices (matching Windows installer pattern)
     letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P']
+    # Calculate the max valid letter for input devices (for error messages)
+    max_input_letter = letters[min(len(input_devices), len(letters)) - 1]
     
     # Display devices
     print("=== OUTPUT DEVICES (Speakers/Headphones) - Use NUMBERS ===")
@@ -476,9 +504,15 @@ def configure_interactive():
     try:
         # Get speaker output
         print("1. Profile 1 Output (OUTPUT - enter number): ", end='', flush=True)
-        speaker_input_str = tty_file.readline().strip()
+        speaker_input_str = read_input_line(tty_file)
+        if speaker_input_str is None:
+            print("\nError: No input received. Please run this command in an interactive terminal.")
+            return
         if speaker_input_str.lower() == 'q':
             print("Configuration cancelled.")
+            return
+        if not speaker_input_str.isdigit():
+            print(f"\nError: '{speaker_input_str}' is not a valid number.")
             return
         speaker_idx = int(speaker_input_str)
         if speaker_idx < 0 or speaker_idx >= len(output_devices):
@@ -489,12 +523,16 @@ def configure_interactive():
         
         # Get speaker input
         print("2. Profile 1 Input (INPUT - enter letter): ", end='', flush=True)
-        speaker_input_letter = tty_file.readline().strip().upper()
+        speaker_input_letter = read_input_line(tty_file)
+        if speaker_input_letter is None:
+            print("\nError: No input received. Please run this command in an interactive terminal.")
+            return
+        speaker_input_letter = speaker_input_letter.upper()
         if speaker_input_letter == 'Q':
             print("Configuration cancelled.")
             return
         if speaker_input_letter not in letters:
-            print("Error: Invalid letter.")
+            print(f"\nError: '{speaker_input_letter}' is not a valid letter (A-{max_input_letter}).")
             return
         speaker_input_idx = letters.index(speaker_input_letter)
         if speaker_input_idx >= len(input_devices):
@@ -505,9 +543,15 @@ def configure_interactive():
         
         # Get headset output
         print("3. Profile 2 Output (OUTPUT - enter number): ", end='', flush=True)
-        headset_output_str = tty_file.readline().strip()
+        headset_output_str = read_input_line(tty_file)
+        if headset_output_str is None:
+            print("\nError: No input received. Please run this command in an interactive terminal.")
+            return
         if headset_output_str.lower() == 'q':
             print("Configuration cancelled.")
+            return
+        if not headset_output_str.isdigit():
+            print(f"\nError: '{headset_output_str}' is not a valid number.")
             return
         headset_output_idx = int(headset_output_str)
         if headset_output_idx < 0 or headset_output_idx >= len(output_devices):
@@ -518,12 +562,16 @@ def configure_interactive():
         
         # Get headset input
         print("4. Profile 2 Input (INPUT - enter letter): ", end='', flush=True)
-        headset_input_letter = tty_file.readline().strip().upper()
+        headset_input_letter = read_input_line(tty_file)
+        if headset_input_letter is None:
+            print("\nError: No input received. Please run this command in an interactive terminal.")
+            return
+        headset_input_letter = headset_input_letter.upper()
         if headset_input_letter == 'Q':
             print("Configuration cancelled.")
             return
         if headset_input_letter not in letters:
-            print("Error: Invalid letter.")
+            print(f"\nError: '{headset_input_letter}' is not a valid letter (A-{max_input_letter}).")
             return
         headset_input_idx = letters.index(headset_input_letter)
         if headset_input_idx >= len(input_devices):
@@ -540,7 +588,11 @@ def configure_interactive():
         print(f"  4. Profile 2 Input: {headset_input_name}")
         
         print("\nSave this configuration? (Y/n): ", end='', flush=True)
-        confirm = tty_file.readline().strip()
+        confirm = read_input_line(tty_file)
+        # For the save prompt, treat empty/None as 'yes' (default Y/n behavior)
+        # This differs from device selection prompts which require valid input
+        if confirm is None:
+            confirm = ''
         if confirm.lower() != 'n':
             config_file = Path.home() / ".config" / "audio_toggle" / "config.json"
             config_file.parent.mkdir(parents=True, exist_ok=True)
@@ -560,10 +612,12 @@ def configure_interactive():
         else:
             print("\nConfiguration cancelled.")
     
-    except (ValueError, IndexError):
-        print("\nError: Invalid selection.")
+    except (ValueError, IndexError) as e:
+        print(f"\nError: Invalid selection - {e}")
     except KeyboardInterrupt:
         print("\n\nConfiguration cancelled.")
+    except EOFError:
+        print("\nError: Input stream ended unexpectedly. Please run this command in an interactive terminal.")
     finally:
         if tty_file and tty_file != sys.stdin:
             tty_file.close()
