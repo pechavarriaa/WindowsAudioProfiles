@@ -427,8 +427,8 @@ def configure_interactive():
     """Interactive configuration mode"""
     # Open /dev/tty for reading input, with fallback to stdin
     try:
-        tty = open('/dev/tty', 'r')
-    except:
+        tty = open('/dev/tty', 'r', buffering=1)
+    except (OSError, IOError):
         tty = sys.stdin
     
     print("\n=== Configure Audio Toggle for Linux ===\n")
