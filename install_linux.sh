@@ -193,7 +193,7 @@ echo -e "Configuration directory: ${CYAN}$CONFIG_DIR${NC}"
 
 # Ask if user wants to configure now
 echo -e "\n"
-read -p "Configure audio devices now? (Y/n): " -n 1 -r
+read -p "Configure audio devices now? (Y/n): " -n 1 -r < /dev/tty 2>/dev/null || REPLY="n"
 echo
 if [[ ! $REPLY =~ ^[Nn]$ ]]; then
     python3 "$INSTALL_DIR/$SCRIPT_NAME" --configure
