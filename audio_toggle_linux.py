@@ -353,24 +353,54 @@ class AudioToggle:
     def configure_devices(self, _):
         """Open configuration in terminal"""
         script_path = Path(__file__).resolve()
+        
+        # Command to execute: run configure then wait for user input to close
+        # Using escaped quotes to avoid shell interpretation issues
+        cmd_str = f'python3 {script_path} --configure; echo; echo Press Enter to close...; read'
+        
+        # List of terminal emulators with their specific invocation patterns
+        # Each entry is a complete command list to try with subprocess.Popen
         terminals = [
-            ['gnome-terminal', '--', 'bash', '-c'],
-            ['konsole', '-e', 'bash', '-c'],
-            ['xfce4-terminal', '-e', 'bash -c'],
-            ['xterm', '-e', 'bash', '-c'],
+            # gnome-terminal: modern syntax uses -- to separate terminal args from command
+            ['gnome-terminal', '--', 'bash', '-c', cmd_str],
+            # konsole: --hold keeps terminal open, -e executes command
+            ['konsole', '--hold', '-e', 'bash', '-c', cmd_str],
+            # xfce4-terminal: --hold keeps terminal open, -x for command with args
+            ['xfce4-terminal', '--hold', '-x', 'bash', '-c', cmd_str],
+            # mate-terminal: -x for command with args
+            ['mate-terminal', '-x', 'bash', '-c', cmd_str],
+            # lxterminal: -e followed by command
+            ['lxterminal', '-e', 'bash', '-c', cmd_str],
+            # tilix: -e executes command
+            ['tilix', '-e', 'bash', '-c', cmd_str],
+            # alacritty: -e followed by command and args
+            ['alacritty', '-e', 'bash', '-c', cmd_str],
+            # kitty: direct command execution
+            ['kitty', 'bash', '-c', cmd_str],
+            # foot: direct command execution
+            ['foot', 'bash', '-c', cmd_str],
+            # terminator: -x for command with args
+            ['terminator', '-x', 'bash', '-c', cmd_str],
+            # urxvt: -e followed by command and args
+            ['urxvt', '-hold', '-e', 'bash', '-c', cmd_str],
+            # st (suckless terminal): -e followed by command and args
+            ['st', '-e', 'bash', '-c', cmd_str],
+            # xterm: -hold keeps window open, -e followed by command
+            ['xterm', '-hold', '-e', 'bash', '-c', cmd_str],
         ]
 
-        cmd_str = f"python3 {script_path} --configure"
-
-        for terminal in terminals:
+        for terminal_cmd in terminals:
             try:
-                subprocess.Popen(terminal + [cmd_str])
+                subprocess.Popen(terminal_cmd)
                 return
             except FileNotFoundError:
                 continue
 
-        print("No terminal found. Please run manually:")
-        print(f"python3 {script_path} --configure")
+        # No terminal found - show notification with instructions
+        self.show_notification(
+            "Configuration Error",
+            f"No terminal found. Please run manually:\npython3 {script_path} --configure"
+        )
     
     def quit(self, _):
         """Quit the application"""
