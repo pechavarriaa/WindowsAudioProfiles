@@ -24,18 +24,23 @@ except ImportError:
 
 try:
     from AppKit import NSApplication, NSApplicationActivationPolicyAccessory
-    from Foundation import NSObject
+    from Foundation import NSObject, NSUserNotification, NSUserNotificationCenter
 except ImportError:
     print("Error: AppKit not found. Install with: pip3 install pyobjc-framework-Cocoa")
     sys.exit(1)
 
-try:
-    from mac_notifications import client as notification_client
-    NOTIFICATIONS_AVAILABLE = True
-except ImportError:
-    print("Warning: macos-notifications not found. Notifications may not work.")
-    print("Install with: pip3 install macos-notifications")
-    NOTIFICATIONS_AVAILABLE = False
+
+class NotificationDelegate(NSObject):
+    """Delegate for NSUserNotificationCenter to show notifications as banners"""
+    
+    def userNotificationCenter_shouldPresentNotification_(self, center, notification):
+        """Always show notifications as banners, even when app is in foreground.
+        
+        Note: Method name follows PyObjC's Objective-C bridge naming convention where
+        colons in the Objective-C selector are replaced with underscores.
+        This maps to: userNotificationCenter:shouldPresentNotification:
+        """
+        return True
 
 
 class AudioToggle(rumps.App):
@@ -51,6 +56,11 @@ class AudioToggle(rumps.App):
         self.config_file = Path.home() / ".config" / "audio_toggle" / "config.json"
         self.lockfile_path = Path.home() / ".config" / "audio_toggle" / ".audio_toggle.lock"
         self.lockfile = None
+
+        # Set up notification center with delegate for reliable notifications
+        self.notification_center = NSUserNotificationCenter.defaultUserNotificationCenter()
+        self.notification_delegate = NotificationDelegate.alloc().init()
+        self.notification_center.setDelegate_(self.notification_delegate)
 
         # Ensure lock directory exists
         self.lockfile_path.parent.mkdir(parents=True, exist_ok=True)
@@ -272,18 +282,20 @@ class AudioToggle(rumps.App):
         self.show_notification("Audio Toggle", message)
     
     def show_notification(self, title, message):
-        """Show macOS notification using macos-notifications library"""
-        if not NOTIFICATIONS_AVAILABLE:
-            # Fallback: print to console if macos-notifications not available
-            print(f"{title}: {message}")
-            return
+        """Show macOS notification using NSUserNotification API.
         
+        Note: NSUserNotification is deprecated as of macOS 11.0 in favor of 
+        UNUserNotificationCenter. However, it still works and is simpler for
+        Python scripts that aren't packaged as proper macOS apps. UNUserNotificationCenter
+        requires complex app bundle signing and permission setup.
+        """
         try:
-            # Use macos-notifications library for simple, reliable notifications
-            notification_client.create_notification(
-                title=title,
-                subtitle=message
-            )
+            notification = NSUserNotification.alloc().init()
+            notification.setTitle_(title)
+            notification.setInformativeText_(message)
+            
+            # Deliver the notification
+            self.notification_center.deliverNotification_(notification)
         except Exception as e:
             # Fallback: print to console if notification fails
             print(f"{title}: {message}")

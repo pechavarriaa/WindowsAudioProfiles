@@ -55,7 +55,7 @@ If you prefer to install manually:
 
 3. **Install Python dependencies**:
    ```bash
-   pip3 install --user rumps pyobjc-framework-Cocoa macos-notifications
+   pip3 install --user rumps pyobjc-framework-Cocoa
    ```
 
 4. **Download the script**:
@@ -141,7 +141,7 @@ brew install switchaudio-osx
 
 ### "rumps not found" error
 ```bash
-pip3 install --user rumps pyobjc-framework-Cocoa macos-notifications
+pip3 install --user rumps pyobjc-framework-Cocoa
 ```
 
 ### App doesn't appear in menu bar
@@ -158,16 +158,11 @@ python3 ~/.local/share/audio_toggle/audio_toggle_mac.py --configure
 ### Notifications not appearing
 If you don't see notifications when toggling audio:
 
-1. **Install dependencies**: Make sure you have installed the macos-notifications library:
-   ```bash
-   pip3 install --user macos-notifications
-   ```
+1. **Check notification permissions**: Go to **System Settings** > **Notifications** > **Python** (or your terminal application) and ensure notifications are enabled.
 
-2. **Check notification permissions**: Go to **System Settings** > **Notifications** > **Python** (or your terminal application) and ensure notifications are enabled.
+2. **Check Do Not Disturb**: Make sure Focus/Do Not Disturb mode is not blocking notifications.
 
-3. **Check Do Not Disturb**: Make sure Focus/Do Not Disturb mode is not blocking notifications.
-
-4. **Terminal permissions**: If running from Terminal, ensure Terminal has notification permissions in System Settings.
+3. **Terminal permissions**: If running from Terminal, ensure Terminal has notification permissions in System Settings.
 
 ## Uninstall
 
@@ -186,7 +181,7 @@ The application uses:
 - **rumps** - A Python library for creating macOS menu bar applications
 - **SwitchAudioSource** - A command-line utility to change audio devices on macOS
 - **CoreAudio** - macOS's native audio framework (accessed via SwitchAudioSource)
-- **macos-notifications** - A Python library for displaying native macOS notifications
+- **PyObjC** - Python bindings for macOS Cocoa frameworks, used for native notifications
 - **LaunchAgents** - macOS's system for auto-starting applications
 
 The app queries the current default audio device and switches between your configured devices based on the current state.

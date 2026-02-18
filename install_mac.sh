@@ -53,9 +53,9 @@ fi
 
 # Install Python dependencies
 echo -e "${CYAN}Installing Python dependencies...${NC}"
-pip3 install --user rumps pyobjc-framework-Cocoa macos-notifications || {
-    echo -e "${YELLOW}Note: If installation failed, you may need to use: pip3 install --user --break-system-packages rumps pyobjc-framework-Cocoa macos-notifications${NC}"
-    pip3 install --user --break-system-packages rumps pyobjc-framework-Cocoa macos-notifications
+pip3 install --user rumps pyobjc-framework-Cocoa || {
+    echo -e "${YELLOW}Note: If installation failed, you may need to use: pip3 install --user --break-system-packages rumps pyobjc-framework-Cocoa${NC}"
+    pip3 install --user --break-system-packages rumps pyobjc-framework-Cocoa
 }
 
 # Create installation directory
