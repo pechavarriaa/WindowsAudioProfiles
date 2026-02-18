@@ -60,6 +60,9 @@ class AudioToggle(rumps.App):
             print("Audio Toggle is already running.")
             sys.exit(0)
 
+        # Create persistent notification delegate
+        self.notification_delegate = NotificationDelegate.alloc().init()
+
         self.load_config()
         self.menu = [
             rumps.MenuItem("Toggle Audio", callback=self.toggle_audio),
@@ -274,10 +277,9 @@ class AudioToggle(rumps.App):
     def show_notification(self, title, message):
         """Show macOS notification using NSUserNotification"""
         try:
-            # Create and configure delegate to ensure notifications are shown
-            delegate = NotificationDelegate.alloc().init()
+            # Configure notification center with persistent delegate
             center = NSUserNotificationCenter.defaultUserNotificationCenter()
-            center.setDelegate_(delegate)
+            center.setDelegate_(self.notification_delegate)
             
             # Create and deliver notification
             notification = NSUserNotification.alloc().init()
