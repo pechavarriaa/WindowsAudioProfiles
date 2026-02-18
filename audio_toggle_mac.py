@@ -24,6 +24,7 @@ except ImportError:
 
 try:
     from AppKit import NSApplication, NSApplicationActivationPolicyAccessory
+    from Foundation import NSUserNotification, NSUserNotificationCenter
 except ImportError:
     print("Error: AppKit not found. Install with: pip3 install pyobjc-framework-Cocoa")
     sys.exit(1)
@@ -263,8 +264,16 @@ class AudioToggle(rumps.App):
         self.show_notification("Audio Toggle", message)
     
     def show_notification(self, title, message):
-        """Show macOS notification"""
-        rumps.notification(title, "", message)
+        """Show macOS notification using NSUserNotification"""
+        try:
+            notification = NSUserNotification.alloc().init()
+            notification.setTitle_(title)
+            notification.setInformativeText_(message)
+            center = NSUserNotificationCenter.defaultUserNotificationCenter()
+            center.deliverNotification_(notification)
+        except Exception as e:
+            # Fallback: print to console if notification fails
+            print(f"{title}: {message}")
     
     @rumps.clicked("Configure Devices...")
     def configure_devices(self, _):
