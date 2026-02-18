@@ -11,7 +11,6 @@ import subprocess
 import json
 import os
 import sys
-import time
 import fcntl
 import atexit
 from pathlib import Path
