@@ -271,7 +271,7 @@ class AudioToggle(rumps.App):
             notification.setInformativeText_(message)
             center = NSUserNotificationCenter.defaultUserNotificationCenter()
             center.deliverNotification_(notification)
-        except Exception as e:
+        except Exception:
             # Fallback: print to console if notification fails
             print(f"{title}: {message}")
     
