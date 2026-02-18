@@ -24,23 +24,15 @@ except ImportError:
 
 try:
     from AppKit import NSApplication, NSApplicationActivationPolicyAccessory
-    from Foundation import NSObject, NSUserNotification, NSUserNotificationCenter
 except ImportError:
     print("Error: AppKit not found. Install with: pip3 install pyobjc-framework-Cocoa")
     sys.exit(1)
 
-
-class NotificationDelegate(NSObject):
-    """Delegate for NSUserNotificationCenter to show notifications as banners"""
-    
-    def userNotificationCenter_shouldPresentNotification_(self, center, notification):
-        """Always show notifications as banners, even when app is in foreground.
-        
-        Note: Method name follows PyObjC's Objective-C bridge naming convention where
-        colons in the Objective-C selector are replaced with underscores.
-        This maps to: userNotificationCenter:shouldPresentNotification:
-        """
-        return True
+try:
+    import UserNotifications
+    _UN_AVAILABLE = True
+except ImportError:
+    _UN_AVAILABLE = False
 
 
 class AudioToggle(rumps.App):
@@ -57,10 +49,14 @@ class AudioToggle(rumps.App):
         self.lockfile_path = Path.home() / ".config" / "audio_toggle" / ".audio_toggle.lock"
         self.lockfile = None
 
-        # Set up notification center with delegate for reliable notifications
-        self.notification_center = NSUserNotificationCenter.defaultUserNotificationCenter()
-        self.notification_delegate = NotificationDelegate.alloc().init()
-        self.notification_center.setDelegate_(self.notification_delegate)
+        # Set up UNUserNotificationCenter and request permission
+        if _UN_AVAILABLE:
+            center = UserNotifications.UNUserNotificationCenter.currentNotificationCenter()
+            center.requestAuthorizationWithOptions_completionHandler_(
+                UserNotifications.UNAuthorizationOptionAlert | UserNotifications.UNAuthorizationOptionSound,
+                lambda granted, error: None
+            )
+            self._un_center = center
 
         # Ensure lock directory exists
         self.lockfile_path.parent.mkdir(parents=True, exist_ok=True)
@@ -282,24 +278,21 @@ class AudioToggle(rumps.App):
         self.show_notification("Audio Toggle", message)
     
     def show_notification(self, title, message):
-        """Show macOS notification using NSUserNotification API.
-        
-        Note: NSUserNotification is deprecated as of macOS 11.0 in favor of 
-        UNUserNotificationCenter. However, it still works and is simpler for
-        Python scripts that aren't packaged as proper macOS apps. UNUserNotificationCenter
-        requires complex app bundle signing and permission setup.
-        """
-        try:
-            notification = NSUserNotification.alloc().init()
-            notification.setTitle_(title)
-            notification.setInformativeText_(message)
-            
-            # Deliver the notification
-            self.notification_center.deliverNotification_(notification)
-        except Exception as e:
-            # Fallback: print to console if notification fails
-            print(f"{title}: {message}")
-            print(f"Notification error: {e}")
+        """Show macOS notification using UNUserNotificationCenter (macOS 10.14+)."""
+        if _UN_AVAILABLE and hasattr(self, '_un_center'):
+            try:
+                content = UserNotifications.UNMutableNotificationContent.alloc().init()
+                content.setTitle_(title)
+                content.setBody_(message)
+                request = UserNotifications.UNNotificationRequest.requestWithIdentifier_content_trigger_(
+                    "audio-toggle", content, None
+                )
+                self._un_center.addNotificationRequest_withCompletionHandler_(request, None)
+                return
+            except Exception as e:
+                print(f"Notification error: {e}")
+        # Fallback: print to console
+        print(f"{title}: {message}")
     
     @rumps.clicked("Configure Devices...")
     def configure_devices(self, _):
