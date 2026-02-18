@@ -34,7 +34,7 @@ class NotificationDelegate(NSObject):
     """Delegate for NSUserNotificationCenter to ensure notifications are displayed"""
     
     def userNotificationCenter_shouldPresentNotification_(self, center, notification):
-        """Always show notifications, even when app is in foreground"""
+        """Always show notifications as banners, even for background menu bar apps"""
         return True
 
 
